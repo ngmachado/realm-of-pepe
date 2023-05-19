@@ -6,6 +6,14 @@ export default mudConfig({
       keySchema: {},
       schema: "uint32",
     },
+  SFContractTable: {
+      keySchema: {
+          id: "uint32",
+      },
+      schema: {
+          contractAddress: "address",
+      }
+  },
     Position: {
       schema: {
         x: "int32",

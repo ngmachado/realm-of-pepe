@@ -20,6 +20,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SFContractTable: (() => {
+      const tableId = new TableId("", "SFContractTable");
+      return defineComponent(
+        world,
+        {
+          contractAddress: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const tableId = new TableId("", "Position");
       return defineComponent(
