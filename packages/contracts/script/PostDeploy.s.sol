@@ -17,7 +17,6 @@ import {
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperTokenDeployer.sol";
 
 import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
-import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
 
 contract PostDeploy is Script {
 
