@@ -9,6 +9,7 @@ contract PlayerSystem is System {
 
   function spawn(int32 x, int32 y) public {
     bytes32 entityKey = Utils.addressToEntityKey(_msgSender());
+
     Position.set(entityKey, x, y);
   }
 }

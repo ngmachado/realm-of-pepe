@@ -6,38 +6,59 @@ import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { SFContractTable } from "../src/codegen/Tables.sol";
 
-// get Superfluid deployer
 import {
-  SuperfluidFrameworkDeployer, ConstantFlowAgreementV1
+  SuperfluidFrameworkDeployer
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperfluidFrameworkDeployer.sol";
+
+import { ERC1820RegistryCompiled } from "@superfluid-finance/ethereum-contracts/contracts/libs/ERC1820RegistryCompiled.sol";
+
+import {
+  SuperTokenDeployer, TestToken, SuperToken
+} from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperTokenDeployer.sol";
+
+import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
+import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
 
 contract PostDeploy is Script {
 
-  SuperfluidFrameworkDeployer internal sfDeployer;
-  SuperfluidFrameworkDeployer.Framework internal sf;
-  ConstantFlowAgreementV1 internal cfa;
-
   function run(address worldAddress) external {
     console.log("PostDeploy.run()");
-
     IWorld world = IWorld(worldAddress);
 
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
-    sfDeployer = new SuperfluidFrameworkDeployer();
-    sf = sfDeployer.getFramework();
+
+    _setSFContracts(world);
+    _setMap(world);
+
+    vm.stopBroadcast();
+  }
+
+
+  function _setMap(IWorld world) internal {
+    console.log("PostDeploy._setMap()");
+  }
+
+  function _setSFContracts(IWorld world) internal {
+    console.log("PostDeploy._setSFContracts()");
+   
+    SuperfluidFrameworkDeployer sfDeployer = new SuperfluidFrameworkDeployer();
+    SuperfluidFrameworkDeployer.Framework memory sf = sfDeployer.getFramework();
 
     console.log("Resolver", address(sf.resolver));
     console.log("Host", address(sf.host));
     console.log("CFA", address(sf.cfa));
+    console.log("SuperTokenFactory", address(sf.superTokenFactory));
 
     // register SF base contracts to storage (host (id 1), resolver (id 2) and CFA (id 3)
     SFContractTable.set(world, 1, address(sf.host));
     SFContractTable.set(world, 2, address(sf.resolver));
     SFContractTable.set(world, 3, address(sf.cfa));
-
-    vm.stopBroadcast();
+   
+    SuperTokenDeployer tokenDeployer = new SuperTokenDeployer(address(sf.superTokenFactory),address(sf.resolver));
+    sf.resolver.addAdmin(address(tokenDeployer));
+    //IPureSuperToken pureSuperToken = tokenDeployer.deployPureSuperToken("TokenA", "T", 1000);
   }
 }

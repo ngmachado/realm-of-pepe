@@ -14,6 +14,15 @@ export default mudConfig({
           contractAddress: "address",
       }
   },
+  SFSuperTokenTable: {
+        keySchema: {
+            id: "uint32",
+        },
+        schema: {
+            superTokenAddress: "address",
+            underlyingToken: "address",
+        }
+  },
     Position: {
       schema: {
         x: "int32",

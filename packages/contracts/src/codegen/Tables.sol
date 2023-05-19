@@ -5,4 +5,5 @@ pragma solidity >=0.8.0;
 
 import { Counter, CounterTableId } from "./tables/Counter.sol";
 import { SFContractTable, SFContractTableTableId } from "./tables/SFContractTable.sol";
+import { SFSuperTokenTable, SFSuperTokenTableData, SFSuperTokenTableTableId } from "./tables/SFSuperTokenTable.sol";
 import { Position, PositionData, PositionTableId } from "./tables/Position.sol";

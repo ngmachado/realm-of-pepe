@@ -35,6 +35,22 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SFSuperTokenTable: (() => {
+      const tableId = new TableId("", "SFSuperTokenTabl");
+      return defineComponent(
+        world,
+        {
+          superTokenAddress: RecsType.String,
+          underlyingToken: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const tableId = new TableId("", "Position");
       return defineComponent(
