@@ -8,7 +8,7 @@
     "deploy": "pnpm run initialize && mud deploy",
     "deploy:hackathon": "pnpm run initialize && mud deploy --profile=hackathon-testnet",
     "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
-    "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+    "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc http://127.0.0.1:8545",
     "initialize": "pnpm run tablegen && pnpm run worldgen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
