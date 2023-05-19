@@ -9,7 +9,7 @@ export const createCamera = (layer: PhaserLayer) => {
     },
   } = layer;
 
-  phaserCamera.centerOn(0, 0);
+  phaserCamera.centerOn(10, 10);
   // layer.scenes.Main.input.drag$.subscribe((e: any) => {
   //   if (e) {
   //     phaserCamera.pan(

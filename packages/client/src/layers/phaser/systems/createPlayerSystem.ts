@@ -11,12 +11,34 @@ import {
   tileCoordToPixelCoord,
 } from "@latticexyz/phaserx";
 
+function getMovementAnimation(keyCode: number) {
+  switch (keyCode) {
+    case 37:
+      return Animations.PepeLeft;
+      // KEYS_PRESSED.left === e.isDown;
+      break;
+    case 38:
+      // KEYS_PRESSED.up === e.isDown;
+      return Animations.PepeUp;
+      break;
+    case 39:
+      // KEYS_PRESSED.right === e.isDown;
+      return Animations.PepeRight;
+      break;
+    case 40:
+      return Animations.PepeDown;
+      // KEYS_PRESSED.down === e.isDown;
+      break;
+  }
+}
+
 export const createPlayerSystem = (layer: PhaserLayer) => {
   const {
     world,
     networkLayer: {
       components: { Position },
       systemCalls: { spawn },
+      playerEntity,
     },
     scenes: {
       Main: { objectPool, input },
@@ -24,6 +46,8 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   } = layer;
 
   input.pointerdown$.subscribe((event) => {
+    if (!event.pointer) return;
+
     const x = event.pointer.worldX;
     const y = event.pointer.worldY;
 
@@ -32,18 +56,77 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     spawn(position.x, position.y);
   });
 
+  // const KEYS_PRESSED = {
+  //   left: false,
+  //   up: false,
+  //   right: false,
+  //   down: false,
+  // };
+
+  input.keyboard$.subscribe((e) => {
+    // switch (e.keyCode) {
+    //   case 37:
+    //     KEYS_PRESSED.left === e.isDown;
+    //     break;
+    //   case 38:
+    //     KEYS_PRESSED.up === e.isDown;
+    //     break;
+    //   case 39:
+    //     KEYS_PRESSED.right === e.isDown;
+    //     break;
+    //   case 40:
+    //     KEYS_PRESSED.down === e.isDown;
+    //     break;
+    // }
+
+    console.log({ playerEntity });
+    if (playerEntity) {
+      const position = getComponentValueStrict(Position, playerEntity);
+      const pixelPosition = tileCoordToPixelCoord(
+        position,
+        TILE_WIDTH,
+        TILE_HEIGHT
+      );
+
+      const playerObj = objectPool.get(playerEntity, "Sprite");
+
+      const animation = getMovementAnimation(e.keyCode);
+      console.log(animation);
+      if (animation) {
+        playerObj.setComponent({
+          id: "animation",
+          once: (sprite) => {
+            sprite.play(animation);
+          },
+        });
+      }
+
+      // playerObj.setComponent({
+      //   id: "position",
+      //   update: (sprite) => {
+      //     sprite.setPosition(pixelPosition.x, pixelPosition.y);
+      //   }
+      // });
+    }
+  });
+
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {
     const playerSprite = objectPool.get(entity, "Sprite");
 
     playerSprite.setComponent({
       id: "animation",
       once: (sprite) => {
-        sprite.play(Animations.MageIdle);
+        sprite.play(Animations.PepeIdle);
       },
     });
   });
 
   defineSystem(world, [Has(Position)], ({ entity }) => {
+    if (playerEntity === entity) {
+      console.log("Its me, do nothing");
+      return;
+    }
+
     const position = getComponentValueStrict(Position, entity);
     const pixelPosition = tileCoordToPixelCoord(
       position,
@@ -51,9 +134,9 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
       TILE_HEIGHT
     );
 
-    const playerObj = objectPool.get(entity, "Sprite");
+    const playerSprite = objectPool.get(entity, "Sprite");
 
-    playerObj.setComponent({
+    playerSprite.setComponent({
       id: "position",
       once: (sprite) => {
         sprite.setPosition(pixelPosition.x, pixelPosition.y);
