@@ -6,8 +6,17 @@ import {
   defineCameraConfig,
 } from "@latticexyz/phaserx";
 import worldTileset from "../../../public/assets/tilesets/world.png";
+import MageSpritesheet from "../../../public/assets/characters/mage.png";
 import { TileAnimations, Tileset } from "../../artTypes/world";
-import { Sprites, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH, Animations } from "./constants";
+import {
+  Sprites,
+  Assets,
+  Maps,
+  Scenes,
+  TILE_HEIGHT,
+  TILE_WIDTH,
+  Animations,
+} from "./constants";
 
 const ANIMATION_INTERVAL = 200;
 
@@ -18,6 +27,7 @@ const mainMap = defineMapConfig({
   backgroundTile: [Tileset.Grass],
   animationInterval: ANIMATION_INTERVAL,
   tileAnimations: TileAnimations,
+
   layers: {
     layers: {
       Background: { tilesets: ["Default"] },
@@ -45,6 +55,15 @@ export const phaserConfig = {
             imagePath: "/assets/atlases/",
           },
         },
+        [Assets.Mage]: {
+          type: AssetType.SpriteSheet,
+          key: Assets.Mage,
+          path: MageSpritesheet,
+          options: {
+            frameHeight: 48,
+            frameWidth: 32,
+          },
+        },
       },
       maps: {
         [Maps.Main]: mainMap,
@@ -53,6 +72,10 @@ export const phaserConfig = {
         [Sprites.Soldier]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/soldier/idle/0.png",
+        },
+        [Sprites.Mage]: {
+          assetKey: Assets.Mage,
+          startFrame: 0,
         },
       },
       animations: [
@@ -66,6 +89,14 @@ export const phaserConfig = {
           prefix: "sprites/soldier/idle/",
           suffix: ".png",
         },
+        {
+          key: Animations.MageIdle,
+          assetKey: Assets.Mage,
+          startFrame: 0,
+          endFrame: 5,
+          frameRate: 6,
+          repeat: -1,
+        },
       ],
       tilesets: {
         Default: {
@@ -78,14 +109,14 @@ export const phaserConfig = {
   },
   scale: defineScaleConfig({
     parent: "phaser-game",
-    zoom: 1,
-    mode: Phaser.Scale.NONE,
+    zoom: 2,
+    mode: Phaser.Scale.CENTER_BOTH,
   }),
   cameraConfig: defineCameraConfig({
     pinchSpeed: 1,
     wheelSpeed: 1,
-    maxZoom: 3,
-    minZoom: 1,
+    maxZoom: 2,
+    minZoom: 2,
   }),
   cullingChunkSize: TILE_HEIGHT * 16,
 };

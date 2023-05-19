@@ -15,7 +15,12 @@ export function createSystemCalls(
     return getComponentValue(Counter, singletonEntity);
   };
 
+  const spawn = async (x: number, y: number) => {
+    worldSend("spawn", [x, y]);
+  };
+
   return {
+    spawn,
     increment,
   };
 }

@@ -6,5 +6,11 @@ export default mudConfig({
       keySchema: {},
       schema: "uint32",
     },
+    Position: {
+      schema: {
+        x: "int32",
+        y: "int32",
+      },
+    },
   },
 });

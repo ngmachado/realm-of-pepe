@@ -10,4 +10,14 @@ export const createCamera = (layer: PhaserLayer) => {
   } = layer;
 
   phaserCamera.centerOn(0, 0);
+  // layer.scenes.Main.input.drag$.subscribe((e: any) => {
+  //   if (e) {
+  //     phaserCamera.pan(
+  //       phaserCamera.scrollX + e.width,
+  //       phaserCamera.scrollY + e.height
+  //     );
+  //     // phaserCamera.scrollX = (e.x + e.width) / phaserCamera.zoom;
+  //     // phaserCamera.scrollY = (e.y + e.height) / phaserCamera.zoom;
+  //   }
+  // });
 };
