@@ -8,14 +8,14 @@ import { SFContractTable } from "../src/codegen/Tables.sol";
 
 // get Superfluid deployer
 import {
-  SuperfluidFrameworkDeployer
+  SuperfluidFrameworkDeployer, ConstantFlowAgreementV1
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperfluidFrameworkDeployer.sol";
 
 contract PostDeploy is Script {
 
   SuperfluidFrameworkDeployer internal sfDeployer;
-
   SuperfluidFrameworkDeployer.Framework internal sf;
+  ConstantFlowAgreementV1 internal cfa;
 
   function run(address worldAddress) external {
     console.log("PostDeploy.run()");
@@ -28,13 +28,15 @@ contract PostDeploy is Script {
     vm.startBroadcast(deployerPrivateKey);
     sfDeployer = new SuperfluidFrameworkDeployer();
     sf = sfDeployer.getFramework();
+
     console.log("Resolver", address(sf.resolver));
     console.log("Host", address(sf.host));
+    console.log("CFA", address(sf.cfa));
 
-    // register SF base contracts to storage (host (id 1) and resolver (id 2))
-
+    // register SF base contracts to storage (host (id 1), resolver (id 2) and CFA (id 3)
     SFContractTable.set(world, 1, address(sf.host));
     SFContractTable.set(world, 2, address(sf.resolver));
+    SFContractTable.set(world, 3, address(sf.cfa));
 
     vm.stopBroadcast();
   }
