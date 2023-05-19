@@ -28,6 +28,7 @@
     "@latticexyz/std-contracts": "2.0.0-alpha.1.170+76be5d21",
     "@latticexyz/store": "2.0.0-alpha.1.170+76be5d21",
     "@latticexyz/world": "2.0.0-alpha.1.170+76be5d21",
+    "@superfluid-finance/ethereum-contracts": "^1.6.0",
     "ethers": "^5.7.2"
   },
   "devDependencies": {
