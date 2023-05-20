@@ -20,17 +20,11 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("SFSuperTokenTabl")));
 bytes32 constant SFSuperTokenTableTableId = _tableId;
 
-struct SFSuperTokenTableData {
-  address superTokenAddress;
-  address underlyingToken;
-}
-
 library SFSuperTokenTable {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
+    SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.ADDRESS;
-    _schema[1] = SchemaType.ADDRESS;
 
     return SchemaLib.encode(_schema);
   }
@@ -44,9 +38,8 @@ library SFSuperTokenTable {
 
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](2);
+    string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "superTokenAddress";
-    _fieldNames[1] = "underlyingToken";
     return ("SFSuperTokenTable", _fieldNames);
   }
 
@@ -73,7 +66,7 @@ library SFSuperTokenTable {
   }
 
   /** Get superTokenAddress */
-  function getSuperTokenAddress(uint32 id) internal view returns (address superTokenAddress) {
+  function get(uint32 id) internal view returns (address superTokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256((id)));
 
@@ -82,7 +75,7 @@ library SFSuperTokenTable {
   }
 
   /** Get superTokenAddress (using the specified store) */
-  function getSuperTokenAddress(IStore _store, uint32 id) internal view returns (address superTokenAddress) {
+  function get(IStore _store, uint32 id) internal view returns (address superTokenAddress) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256((id)));
 
@@ -91,7 +84,7 @@ library SFSuperTokenTable {
   }
 
   /** Set superTokenAddress */
-  function setSuperTokenAddress(uint32 id, address superTokenAddress) internal {
+  function set(uint32 id, address superTokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256((id)));
 
@@ -99,105 +92,16 @@ library SFSuperTokenTable {
   }
 
   /** Set superTokenAddress (using the specified store) */
-  function setSuperTokenAddress(IStore _store, uint32 id, address superTokenAddress) internal {
+  function set(IStore _store, uint32 id, address superTokenAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256((id)));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((superTokenAddress)));
   }
 
-  /** Get underlyingToken */
-  function getUnderlyingToken(uint32 id) internal view returns (address underlyingToken) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
-    return (address(Bytes.slice20(_blob, 0)));
-  }
-
-  /** Get underlyingToken (using the specified store) */
-  function getUnderlyingToken(IStore _store, uint32 id) internal view returns (address underlyingToken) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
-    return (address(Bytes.slice20(_blob, 0)));
-  }
-
-  /** Set underlyingToken */
-  function setUnderlyingToken(uint32 id, address underlyingToken) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((underlyingToken)));
-  }
-
-  /** Set underlyingToken (using the specified store) */
-  function setUnderlyingToken(IStore _store, uint32 id, address underlyingToken) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((underlyingToken)));
-  }
-
-  /** Get the full data */
-  function get(uint32 id) internal view returns (SFSuperTokenTableData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
-    return decode(_blob);
-  }
-
-  /** Get the full data (using the specified store) */
-  function get(IStore _store, uint32 id) internal view returns (SFSuperTokenTableData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
-    return decode(_blob);
-  }
-
-  /** Set the full data using individual values */
-  function set(uint32 id, address superTokenAddress, address underlyingToken) internal {
-    bytes memory _data = encode(superTokenAddress, underlyingToken);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
-  }
-
-  /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, uint32 id, address superTokenAddress, address underlyingToken) internal {
-    bytes memory _data = encode(superTokenAddress, underlyingToken);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(uint256((id)));
-
-    _store.setRecord(_tableId, _keyTuple, _data);
-  }
-
-  /** Set the full data using the data struct */
-  function set(uint32 id, SFSuperTokenTableData memory _table) internal {
-    set(id, _table.superTokenAddress, _table.underlyingToken);
-  }
-
-  /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, uint32 id, SFSuperTokenTableData memory _table) internal {
-    set(_store, id, _table.superTokenAddress, _table.underlyingToken);
-  }
-
-  /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (SFSuperTokenTableData memory _table) {
-    _table.superTokenAddress = (address(Bytes.slice20(_blob, 0)));
-
-    _table.underlyingToken = (address(Bytes.slice20(_blob, 20)));
-  }
-
   /** Tightly pack full data using this table's schema */
-  function encode(address superTokenAddress, address underlyingToken) internal view returns (bytes memory) {
-    return abi.encodePacked(superTokenAddress, underlyingToken);
+  function encode(address superTokenAddress) internal view returns (bytes memory) {
+    return abi.encodePacked(superTokenAddress);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

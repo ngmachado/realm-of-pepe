@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { SFContractTable } from "../src/codegen/Tables.sol";
+import { SFContractTable, SFSuperTokenTable } from "../src/codegen/Tables.sol";
 
 import {
   SuperfluidFrameworkDeployer
@@ -23,7 +23,6 @@ contract PostDeploy is Script {
   function run(address worldAddress) external {
     console.log("PostDeploy.run()");
     IWorld world = IWorld(worldAddress);
-
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     // Start broadcasting transactions from the deployer account
@@ -42,7 +41,7 @@ contract PostDeploy is Script {
 
   function _setSFContracts(IWorld world) internal {
     console.log("PostDeploy._setSFContracts()");
-   
+    //vm.etch(ERC1820RegistryCompiled.at, ERC1820RegistryCompiled.bin);
     SuperfluidFrameworkDeployer sfDeployer = new SuperfluidFrameworkDeployer();
     SuperfluidFrameworkDeployer.Framework memory sf = sfDeployer.getFramework();
 
@@ -55,9 +54,25 @@ contract PostDeploy is Script {
     SFContractTable.set(world, 1, address(sf.host));
     SFContractTable.set(world, 2, address(sf.resolver));
     SFContractTable.set(world, 3, address(sf.cfa));
-   
-    SuperTokenDeployer tokenDeployer = new SuperTokenDeployer(address(sf.superTokenFactory),address(sf.resolver));
+
+    SuperTokenDeployer tokenDeployer = new SuperTokenDeployer(address(sf.superTokenFactory), address(sf.resolver));
     sf.resolver.addAdmin(address(tokenDeployer));
-    //IPureSuperToken pureSuperToken = tokenDeployer.deployPureSuperToken("TokenA", "T", 1000);
+
+    // deploy all streamable resources tokens
+    IPureSuperToken pureSuperTokenA = tokenDeployer.deployPureSuperToken("TokenA", "TokenA", 1000000000000000 ether);
+    IPureSuperToken pureSuperTokenB = tokenDeployer.deployPureSuperToken("TokenB", "TokenB", 1000000000000000 ether);
+    IPureSuperToken pureSuperTokenC = tokenDeployer.deployPureSuperToken("TokenC", "TokenC", 1000000000000000 ether);
+    IPureSuperToken pureSuperTokenD = tokenDeployer.deployPureSuperToken("TokenD", "TokenD", 1000000000000000 ether);
+
+    SFSuperTokenTable.set(world, 1, address(pureSuperTokenA));
+    SFSuperTokenTable.set(world, 2, address(pureSuperTokenB));
+    SFSuperTokenTable.set(world, 3, address(pureSuperTokenC));
+    SFSuperTokenTable.set(world, 4, address(pureSuperTokenD));
+
+    console.log("SuperToken A", address(pureSuperTokenA));
+    console.log("SuperToken B", address(pureSuperTokenB));
+    console.log("SuperToken C", address(pureSuperTokenC));
+    console.log("SuperToken D", address(pureSuperTokenD));
+
   }
 }

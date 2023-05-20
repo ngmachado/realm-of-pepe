@@ -20,7 +20,6 @@ export default mudConfig({
         },
         schema: {
             superTokenAddress: "address",
-            underlyingToken: "address",
         }
   },
     Position: {
