@@ -10,8 +10,6 @@ import {
   SuperfluidFrameworkDeployer
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperfluidFrameworkDeployer.sol";
 
-import { ERC1820RegistryCompiled } from "@superfluid-finance/ethereum-contracts/contracts/libs/ERC1820RegistryCompiled.sol";
-
 import {
   SuperTokenDeployer, TestToken, SuperToken
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperTokenDeployer.sol";
@@ -41,7 +39,7 @@ contract PostDeploy is Script {
 
   function _setSFContracts(IWorld world) internal {
     console.log("PostDeploy._setSFContracts()");
-    //vm.etch(ERC1820RegistryCompiled.at, ERC1820RegistryCompiled.bin);
+
     SuperfluidFrameworkDeployer sfDeployer = new SuperfluidFrameworkDeployer();
     SuperfluidFrameworkDeployer.Framework memory sf = sfDeployer.getFramework();
 
