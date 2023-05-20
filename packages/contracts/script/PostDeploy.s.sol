@@ -7,14 +7,17 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { SFContractTable, SFSuperTokenTable } from "../src/codegen/Tables.sol";
 
 import {
-  SuperfluidFrameworkDeployer
+  SuperfluidFrameworkDeployer, ISuperToken, ISuperfluid
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperfluidFrameworkDeployer.sol";
 
 import {
   SuperTokenDeployer, TestToken, SuperToken
 } from "@superfluid-finance/ethereum-contracts/contracts/utils/SuperTokenDeployer.sol";
 
+import { ISuperApp } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperApp.sol";
 import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
+
+import { EvoBuilding } from "../src/superfluid/building/EvoBuilding.sol";
 
 contract PostDeploy is Script {
 
@@ -28,6 +31,7 @@ contract PostDeploy is Script {
 
     _setSFContracts(world);
     _setMap(world);
+    _setBuildings(world);
 
     vm.stopBroadcast();
   }
@@ -71,6 +75,37 @@ contract PostDeploy is Script {
     console.log("SuperToken B", address(pureSuperTokenB));
     console.log("SuperToken C", address(pureSuperTokenC));
     console.log("SuperToken D", address(pureSuperTokenD));
+
+  }
+
+  function _setBuildings(IWorld world) internal {
+    console.log("PostDeploy._setBuildings()");
+
+    // Deploy Storage
+    string memory name = "EvoBuilding";
+    string memory symbol = "EVO";
+    address inResourceToken = SFSuperTokenTable.get(world, 1); //token a
+    int96 maxInFlowRate = 600000; // amount we can stream by second
+
+    string[] memory tokenURIs = new string[](4);
+    tokenURIs[0] = "https://something.local/0";
+    tokenURIs[1] = "https://something.local/1";
+    tokenURIs[2] = "https://something.local/2";
+    tokenURIs[3] = "https://something.local/3";
+
+    uint256[] memory tiers = new uint256[](4);
+    tiers[0] = 1 ether;
+    tiers[1] = 2 ether;
+    tiers[2] = 3 ether;
+    tiers[3] = 4 ether;
+    EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(inResourceToken), maxInFlowRate, tokenURIs, tiers);
+
+    console.log("EvoBuilding", address(building));
+    // must be register as SuperApp
+    ISuperfluid host = ISuperfluid(SFContractTable.get(world, 1)); // get host
+    host.isApp(ISuperApp(address(building)));
+
+    console.log("EvoBuilding isApp", host.isApp(ISuperApp(address(building))));
 
   }
 }

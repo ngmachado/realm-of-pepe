@@ -143,7 +143,14 @@ contract EvoBuilding is SuperAppBaseCFA, ERC721 {
 	function tokenURI(uint256 id) public view override returns (string memory) {
 		require(_exists(id), "EVO: tokenURI query for nonexistent token");
 		uint256 tierLevel = getTierLevel(_getBalance(id));
-		return string(abi.encodePacked("https://ipfs.io/ipfs/", tokenURIs[tierLevel - 1]));
+		// check if user is streaming in
+		address sender = ownerOf(id);
+		int96 inFlowRate = inResourceToken.getFlowRate(sender, address(this));
+		if(inFlowRate > 0) {
+			return string(abi.encodePacked("https://ipfs.io/ipfs/", tokenURIs[tierLevel - 1]));
+		} else {
+			return string(abi.encodePacked("https://ipfs.io/ipfs/", tokenURIs[0]));
+		}
 	}
 
 	function _getBalance(uint256 id) internal view returns (uint256) {
