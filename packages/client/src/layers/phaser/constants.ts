@@ -25,7 +25,6 @@ export enum Sprites {
 export enum Assets {
   MainAtlas = "MainAtlas",
   Tileset = "Tileset",
-  NewTiles = "NewTiles",
   Mage = "Mage",
   Pepe = "Pepe",
 }
