@@ -11,24 +11,32 @@ import {
   tileCoordToPixelCoord,
 } from "@latticexyz/phaserx";
 
-function getMovementAnimation(keyCode: number) {
+function getMovementAction(keyCode: number) {
   switch (keyCode) {
-    case 37:
-      return Animations.PepeLeft;
-      // KEYS_PRESSED.left === e.isDown;
-      break;
-    case 38:
-      // KEYS_PRESSED.up === e.isDown;
-      return Animations.PepeUp;
-      break;
-    case 39:
-      // KEYS_PRESSED.right === e.isDown;
-      return Animations.PepeRight;
-      break;
-    case 40:
-      return Animations.PepeDown;
-      // KEYS_PRESSED.down === e.isDown;
-      break;
+    case 37: // LEFT
+      return {
+        animation: Animations.PepeLeft,
+        x: -1,
+        y: 0,
+      };
+    case 38: // UP
+      return {
+        animation: Animations.PepeUp,
+        x: 0,
+        y: -1,
+      };
+    case 39: // RIGHT
+      return {
+        animation: Animations.PepeRight,
+        x: 1,
+        y: 0,
+      };
+    case 40: // DOWN
+      return {
+        animation: Animations.PepeDown,
+        x: 0,
+        y: 1,
+      };
   }
 }
 
@@ -37,15 +45,20 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     world,
     networkLayer: {
       components: { Position },
-      systemCalls: { spawn },
+      systemCalls: { spawn, move },
       playerEntity,
     },
     scenes: {
-      Main: { objectPool, input },
+      Main: {
+        objectPool,
+        input,
+        phaserScene: { tweens },
+      },
     },
   } = layer;
 
   input.pointerdown$.subscribe((event) => {
+    console.log({ ...event });
     if (!event.pointer) return;
 
     const x = event.pointer.worldX;
@@ -56,47 +69,35 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     spawn(position.x, position.y);
   });
 
-  // const KEYS_PRESSED = {
-  //   left: false,
-  //   up: false,
-  //   right: false,
-  //   down: false,
-  // };
-
   input.keyboard$.subscribe((e) => {
-    // switch (e.keyCode) {
-    //   case 37:
-    //     KEYS_PRESSED.left === e.isDown;
-    //     break;
-    //   case 38:
-    //     KEYS_PRESSED.up === e.isDown;
-    //     break;
-    //   case 39:
-    //     KEYS_PRESSED.right === e.isDown;
-    //     break;
-    //   case 40:
-    //     KEYS_PRESSED.down === e.isDown;
-    //     break;
-    // }
+    if (e && playerEntity) {
+      const action = getMovementAction(e.keyCode);
 
-    console.log({ playerEntity });
-    if (playerEntity) {
-      const position = getComponentValueStrict(Position, playerEntity);
-      const pixelPosition = tileCoordToPixelCoord(
-        position,
-        TILE_WIDTH,
-        TILE_HEIGHT
-      );
+      if (action) {
+        const position = getComponentValueStrict(Position, playerEntity);
 
-      const playerObj = objectPool.get(playerEntity, "Sprite");
+        const newPosition = {
+          x: position.x + action.x,
+          y: position.y + action.y,
+        };
 
-      const animation = getMovementAnimation(e.keyCode);
-      console.log(animation);
-      if (animation) {
+        const pixelPosition = tileCoordToPixelCoord(
+          newPosition,
+          TILE_WIDTH,
+          TILE_HEIGHT
+        );
+
+        const playerObj = objectPool.get(playerEntity, "Sprite");
+
+        console.log(action);
+
+        move(newPosition.x, newPosition.y);
+
         playerObj.setComponent({
           id: "animation",
           once: (sprite) => {
-            sprite.play(animation);
+            sprite.setPosition(pixelPosition.x, pixelPosition.y);
+            sprite.play(action.animation);
           },
         });
       }

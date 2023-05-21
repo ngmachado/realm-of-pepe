@@ -7,9 +7,16 @@ import { Utils } from "../Utils.sol";
 
 contract PlayerSystem is System {
 
+  // TODO: If user already has a record in Position table then use those coordinates.
+  // Else send player to 0,0 coordinates.
   function spawn(int32 x, int32 y) public {
     bytes32 entityKey = Utils.addressToEntityKey(_msgSender());
-
     Position.set(entityKey, x, y);
   }
+
+  function move(int32 x, int32 y) public {
+    bytes32 entityKey = Utils.addressToEntityKey(_msgSender());
+    Position.set(entityKey, x, y);
+  }
+
 }

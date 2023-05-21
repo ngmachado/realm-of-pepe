@@ -5,4 +5,6 @@ pragma solidity >=0.8.0;
 
 interface IPlayerSystem {
   function spawn(int32 x, int32 y) external;
+
+  function move(int32 x, int32 y) external;
 }

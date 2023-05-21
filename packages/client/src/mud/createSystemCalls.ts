@@ -19,7 +19,12 @@ export function createSystemCalls(
     worldSend("spawn", [x, y]);
   };
 
+  const move = async (x: number, y: number) => {
+    worldSend("move", [x, y]);
+  };
+
   return {
+    move,
     spawn,
     increment,
   };
