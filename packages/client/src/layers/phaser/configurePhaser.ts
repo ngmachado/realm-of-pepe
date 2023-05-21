@@ -5,8 +5,7 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import worldTileset from "../../../public/assets/tilesets/world.png";
-import newTileset from "../../../public/assets/tilesets/new_world.png";
+import tileset from "../../../public/assets/tilesets/new_world.png";
 import MageSpritesheet from "../../../public/assets/characters/mage.png";
 import PepeSpritesheet from "../../../public/assets/characters/pepe.png";
 import { TileAnimations, Tileset } from "../../artTypes/world";
@@ -33,6 +32,7 @@ const mainMap = defineMapConfig({
     layers: {
       Background: { tilesets: ["Default"] },
       Foreground: { tilesets: ["Default"] },
+      Interactive: { tilesets: ["Default"] },
     },
     defaultLayer: "Background",
   },
@@ -45,12 +45,7 @@ export const phaserConfig = {
         [Assets.Tileset]: {
           type: AssetType.Image,
           key: Assets.Tileset,
-          path: worldTileset,
-        },
-        [Assets.NewTiles]: {
-          type: AssetType.Image,
-          key: Assets.NewTiles,
-          path: newTileset,
+          path: tileset,
         },
         [Assets.MainAtlas]: {
           type: AssetType.MultiAtlas,
@@ -159,8 +154,7 @@ export const phaserConfig = {
       ],
       tilesets: {
         Default: {
-          assetKey: Assets.NewTiles,
-          // assetKey: Assets.Tileset,
+          assetKey: Assets.Tileset,
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
         },

@@ -10,35 +10,7 @@ import {
   pixelCoordToTileCoord,
   tileCoordToPixelCoord,
 } from "@latticexyz/phaserx";
-
-function getMovementAction(keyCode: number) {
-  switch (keyCode) {
-    case 37: // LEFT
-      return {
-        animation: Animations.PepeLeft,
-        x: -1,
-        y: 0,
-      };
-    case 38: // UP
-      return {
-        animation: Animations.PepeUp,
-        x: 0,
-        y: -1,
-      };
-    case 39: // RIGHT
-      return {
-        animation: Animations.PepeRight,
-        x: 1,
-        y: 0,
-      };
-    case 40: // DOWN
-      return {
-        animation: Animations.PepeDown,
-        x: 0,
-        y: 1,
-      };
-  }
-}
+import { getMovementAction } from "../utils/InputUtils";
 
 export const createPlayerSystem = (layer: PhaserLayer) => {
   const {
@@ -57,14 +29,19 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
+  // TODO: Use this for interactive items when phaserX tiles are interactive
+  // phaserInput.on("gameobjectdown", (pointer: any, gameObject: any) => {
+  //   console.log("Game obj down", { pointer, gameObject });
+  // });
+
   input.pointerdown$.subscribe((event) => {
-    console.log({ ...event });
     if (!event.pointer) return;
 
     const x = event.pointer.worldX;
     const y = event.pointer.worldY;
 
     const position = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
+
     if (position.x === 0 && position.y === 0) return;
     spawn(position.x, position.y);
   });
