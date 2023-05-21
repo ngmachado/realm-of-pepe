@@ -41,7 +41,6 @@ export function defineContractComponents(world: World) {
         world,
         {
           superTokenAddress: RecsType.String,
-          underlyingToken: RecsType.String,
         },
         {
           metadata: {
