@@ -18,7 +18,8 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
 
   // The collision layer data
   const collisionLayerData = [
-    {x: 12, y: 0, width: 4, height: 8}
+    {x: 12, y: 0, width: 4, height: 8},
+    {x: 10, y: 11, width: 2, height: 2},
   ];
 
 
