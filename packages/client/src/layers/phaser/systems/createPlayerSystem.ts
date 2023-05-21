@@ -13,6 +13,15 @@ import {
 import { getMovementAction } from "../utils/InputUtils";
 
 export const createPlayerSystem = (layer: PhaserLayer) => {
+
+  let cachedPlayerTilePosition = { x: 0, y: 0 };
+
+  // The collision layer data
+  const collisionLayerData = [
+    {x: 12, y: 0, width: 4, height: 8}
+  ];
+
+
   const {
     world,
     networkLayer: {
@@ -49,17 +58,33 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   input.keyboard$.subscribe((e) => {
     if (e && playerEntity) {
       const action = getMovementAction(e.keyCode);
+      const playerHeight = 1;
+      const playerWidth = 1;
 
       if (action) {
-        const position = getComponentValueStrict(Position, playerEntity);
+        
+        const tempCachedPlayerTilePosition = cachedPlayerTilePosition;
+        
+        cachedPlayerTilePosition = {
+          x: cachedPlayerTilePosition.x + action.x,
+          y: cachedPlayerTilePosition.y + action.y,
+        }
+        // if cachedPlayerTilePosition is not set get it from the playerEntity
+        if(cachedPlayerTilePosition.x === 0 && cachedPlayerTilePosition.y === 0) {
+            cachedPlayerTilePosition = getComponentValueStrict(Position, playerEntity);
+        }
 
-        const newPosition = {
-          x: position.x + action.x,
-          y: position.y + action.y,
-        };
+        // bool representing if the player is trying to move into a collision tile
+        const hit = collisionLayerData.find(data =>
+            cachedPlayerTilePosition.x < data.x + data.width &&
+            cachedPlayerTilePosition.x + playerWidth > data.x &&
+            cachedPlayerTilePosition.y < data.y + data.height &&
+            cachedPlayerTilePosition.y + playerHeight > data.y
+        ) !== undefined;
+
 
         const pixelPosition = tileCoordToPixelCoord(
-          newPosition,
+            cachedPlayerTilePosition,
           TILE_WIDTH,
           TILE_HEIGHT
         );
@@ -67,17 +92,31 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
         const playerObj = objectPool.get(playerEntity, "Sprite");
 
         console.log(action);
+        if(!hit) {
+          // use then to wait for the animation to finish
+          playerObj.setComponent({
+            id: "animation",
+            once: (sprite) => {
+              sprite.setPosition(pixelPosition.x, pixelPosition.y);
+              sprite.play(action.animation);
+            },
+          });
 
-        move(newPosition.x, newPosition.y);
+          console.log("move")
+          console.log("cachedPlayerTilePosition", cachedPlayerTilePosition)
+          move(cachedPlayerTilePosition.x, cachedPlayerTilePosition.y);
+        } else {
+          console.log("hit", hit)
+          playerObj.setComponent({
+            id: "animation",
+            once: (sprite) => {
+              sprite.play(action.animation);
+            },
+          });
+          cachedPlayerTilePosition = tempCachedPlayerTilePosition;
+        }
 
-        playerObj.setComponent({
-          id: "animation",
-          once: (sprite) => {
-            sprite.setPosition(pixelPosition.x, pixelPosition.y);
-            sprite.play(action.animation);
-          },
-        });
-      }
+        }
 
       // playerObj.setComponent({
       //   id: "position",
