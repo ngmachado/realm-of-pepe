@@ -159,8 +159,8 @@ export const phaserConfig = {
       ],
       tilesets: {
         Default: {
-          // assetKey: Assets.NewTiles,
-          assetKey: Assets.Tileset,
+          assetKey: Assets.NewTiles,
+          // assetKey: Assets.Tileset,
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
         },

@@ -70,7 +70,7 @@ const LAYER1 = [
 ];
 
 const LAYER_WIDTH = 21;
-const LAYER_HEIGHT = 21;
+const LAYER_HEIGHT = 16;
 
 export function createMapSystem(layer: PhaserLayer) {
   const {
@@ -83,32 +83,33 @@ export function createMapSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  // for (let x = 0; x <= 21; x++) {
-  //   for (let y = 0; y <= 21; y++) {
-  //     const coord = { x, y };
-  //     console.log(coord, LAYER1);
-  //     const spriteNr = LAYER1[y][x];
-  //     console.log({ x, y }, spriteNr);
-
-  //     if (LAYER1[y][x]) {
-  //       putTileAt(coord, spriteNr, "Foreground");
-  //     }
-  //   }
-  // }
-  const noise = createNoise2D();
-
-  for (let x = -500; x < 500; x++) {
-    for (let y = -500; y < 500; y++) {
+  for (let x = 0; x < LAYER_WIDTH; x++) {
+    for (let y = 0; y < LAYER_HEIGHT; y++) {
       const coord = { x, y };
-      const seed = noise(x, y);
+      const spriteNr = LAYER1[y][x];
 
-      putTileAt(coord, Tileset.Grass, "Background");
-
-      if (seed >= 0.45) {
-        putTileAt(coord, Tileset.Mountain, "Foreground");
-      } else if (seed < -0.45) {
-        putTileAt(coord, Tileset.Forest, "Foreground");
+      if (spriteNr >= 0) {
+        putTileAt(coord, spriteNr, "Foreground");
       }
     }
   }
+
+  // putTileAt({ x: 0, y: 0 }, 63, "Foreground");
+
+  // const noise = createNoise2D();
+
+  // for (let x = -500; x < 500; x++) {
+  //   for (let y = -500; y < 500; y++) {
+  //     const coord = { x, y };
+  //     const seed = noise(x, y);
+
+  //     putTileAt(coord, Tileset.Grass, "Background");
+
+  //     if (seed >= 0.45) {
+  //       putTileAt(coord, Tileset.Mountain, "Foreground");
+  //     } else if (seed < -0.45) {
+  //       putTileAt(coord, Tileset.Forest, "Foreground");
+  //     }
+  //   }
+  // }
 }
