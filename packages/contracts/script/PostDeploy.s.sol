@@ -76,13 +76,14 @@ contract PostDeploy is Script {
     console.log("SuperToken BluePotion (storage id 2)", address(pureSuperBlue));
 
     // deploy resourceGenerator contract for this token - Player gets 100000 sapphire parts per second
-    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 100000000000000000);
+    // user should get 1 full token per minute
+    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 33333333333333332);
     SFResourceGeneratorTable.set(world, 1, address(resourceGenerator));
     console.log("ResourceGenerator Sapphire (storage id 1)", address(resourceGenerator));
 
     // deploy Store contract with sapphire as stream in token and blue as stream out token
-    Store store = new Store(pureSuperSapphire, pureSuperBlue, 0, 100000);
-    SFStoreTable.set(world, 1, address(store), address(pureSuperSapphire), address(pureSuperBlue), 100000);
+    Store store = new Store(pureSuperSapphire, pureSuperBlue, 0, 33333333333333332);
+    SFStoreTable.set(world, 1, address(store), address(pureSuperSapphire), address(pureSuperBlue), 33333333333333332);
     // transfer all tokens to resourceGenerator
     console.log("Store Sapphire/BluePotion (storage id 1)", address(store));
 
@@ -106,7 +107,7 @@ contract PostDeploy is Script {
     string memory name = "PepeArmy";
     string memory symbol = "0_x";
     address bluePotionAddress = SFSuperTokenTable.get(world, 2); //BluePotion
-    int96 maxInFlowRate = 600000; // amount we can stream by second
+    int96 maxInFlowRate = 33333333333333332; // amount we can stream by second
 
     string[] memory tokenURIs = new string[](4);
     tokenURIs[0] = "https://something.local/0";
