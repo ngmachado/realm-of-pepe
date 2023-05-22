@@ -1,4 +1,5 @@
 import { Tileset } from "../../../artTypes/world";
+import { Assets, Sprites, WORLD_HEIGHT, WORLD_WIDTH } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import { createNoise2D } from "simplex-noise";
 
@@ -143,33 +144,25 @@ const LAYER_HEIGHT = 33;
 export function createMapSystem(layer: PhaserLayer) {
   const {
     scenes: {
-      Main: {
-        objectPool,
-        maps: {
-          Main: { putTileAt },
-        },
-      },
+      Main: { phaserScene },
     },
   } = layer;
 
-  for (let x = 0; x < LAYER_WIDTH; x++) {
-    for (let y = 0; y < LAYER_HEIGHT; y++) {
-      const coord = { x, y };
-      const spriteNr = LAYER1[y][x];
+  // Ditching tiles because we can't render tiles from multiple spritesheets
+  // for (let x = 0; x < LAYER_WIDTH; x++) {
+  //   for (let y = 0; y < LAYER_HEIGHT; y++) {
+  //     const coord = { x, y };
+  //     const spriteNr = LAYER1[y][x];
 
-      if (spriteNr >= 0) {
-        putTileAt(coord, spriteNr, "Background");
-      }
-    }
-  }
+  //     if (spriteNr >= 0) {
+  //       putTileAt(coord, spriteNr, "Background");
+  //     }
+  //   }
+  // }
 
-  const asd = objectPool.get("asd", "Sprite");
-
-  asd.setComponent({
-    id: "mapss",
-    once: (sprite) => {
-      sprite.setTexture("Victory");
-      sprite.setPosition(0, 0);
-    },
-  });
+  phaserScene.add
+    .sprite(0, 0, Assets.Background)
+    .setSize(WORLD_WIDTH, WORLD_HEIGHT)
+    .setScale(3)
+    .setOrigin(0, 0);
 }

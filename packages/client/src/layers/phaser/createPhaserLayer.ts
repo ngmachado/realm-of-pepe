@@ -6,6 +6,7 @@ import {
   SuperfluidLayer,
   createSuperfluidLayer,
 } from "../network/createSuperfluidLayer";
+import { WORLD_HEIGHT, WORLD_WIDTH } from "./constants";
 
 export type PhaserLayer = Awaited<ReturnType<typeof createPhaserLayer>>;
 type PhaserEngineConfig = Parameters<typeof createPhaserEngine>[0];
@@ -25,7 +26,7 @@ export const createPhaserLayer = async (
 
   const { camera } = scenes.Main;
 
-  camera.phaserCamera.setBounds(0, 0, 528, 520);
+  camera.phaserCamera.setBounds(0, 0, WORLD_HEIGHT * 3, WORLD_WIDTH * 3);
   camera.phaserCamera.centerOn(15, 15);
 
   const loaderPlugin = scenes.Main.phaserScene.load.audio(

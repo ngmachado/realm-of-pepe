@@ -145,6 +145,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
           cachedPlayerTilePosition.x,
           cachedPlayerTilePosition.y
         );
+        sprite.setScale(3);
       },
     });
   });

@@ -1,23 +1,25 @@
 import {
-  defineSceneConfig,
   AssetType,
-  defineScaleConfig,
-  defineMapConfig,
   defineCameraConfig,
+  defineMapConfig,
+  defineScaleConfig,
+  defineSceneConfig,
 } from "@latticexyz/phaserx";
-import SummerTileset from "../../../public/assets/tilesets/summer.png";
-import VictorySprite from "../../../public/assets/summ.png";
-import CrystalsSpritesheet from "../../../public/assets/tilesets/crystals.png";
+import BgSprite from "../../../public/assets/bg.png";
 import PepeSpritesheet from "../../../public/assets/characters/pepe.png";
-import { TileAnimations, Tileset } from "../../artTypes/world";
+import CrystalsSpritesheet from "../../../public/assets/tilesets/crystals.png";
+import SummerTileset from "../../../public/assets/tilesets/summer.png";
+import { TileAnimations } from "../../artTypes/world";
 import {
-  Sprites,
+  Animations,
   Assets,
   Maps,
   Scenes,
+  Sprites,
   TILE_HEIGHT,
   TILE_WIDTH,
-  Animations,
+  WORLD_HEIGHT,
+  WORLD_WIDTH,
 } from "./constants";
 
 const ANIMATION_INTERVAL = 200;
@@ -59,15 +61,16 @@ export const phaserConfig = {
           options: {
             frameHeight: 32,
             frameWidth: 32,
+            scale: 3,
           },
         },
-        [Assets.Victory]: {
+        [Assets.Background]: {
           type: AssetType.Image,
-          key: Assets.Victory,
-          path: VictorySprite,
+          key: Assets.Background,
+          path: BgSprite,
           options: {
-            frameHeight: 512,
-            frameWidth: 528,
+            frameHeight: WORLD_HEIGHT,
+            frameWidth: WORLD_WIDTH,
           },
         },
       },
@@ -83,8 +86,8 @@ export const phaserConfig = {
           assetKey: Assets.Crystals,
           startFrame: 0,
         },
-        [Sprites.Victory]: {
-          assetKey: Assets.Victory,
+        [Sprites.Background]: {
+          assetKey: Assets.Background,
           startFrame: 0,
         },
       },
@@ -146,7 +149,7 @@ export const phaserConfig = {
   },
   scale: defineScaleConfig({
     parent: "phaser-game",
-    zoom: 3,
+    zoom: 1,
     mode: Phaser.Scale.CENTER_BOTH,
   }),
   cameraConfig: defineCameraConfig({

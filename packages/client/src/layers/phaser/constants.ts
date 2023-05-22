@@ -17,15 +17,18 @@ export enum Animations {
 export enum Sprites {
   Crystal,
   Pepe,
-  Victory,
+  Background,
 }
 
 export enum Assets {
   SummerTileset = "SummerTileset",
   Crystals = "Crystals",
   Pepe = "Pepe",
-  Victory = "Victory",
+  Background = "Background",
 }
 
-export const TILE_HEIGHT = 16;
-export const TILE_WIDTH = 16;
+export const TILE_HEIGHT = 48;
+export const TILE_WIDTH = 48;
+
+export const WORLD_HEIGHT = 800;
+export const WORLD_WIDTH = 576;
