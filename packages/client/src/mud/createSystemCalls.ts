@@ -24,8 +24,10 @@ export function createSystemCalls(
   };
 
   const setSapphireStream = async () => {
-    worldSend("setSapphireStream", []);
-  }
+    const tx = worldSend("setSapphireStream", []);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+   // return getComponentValue(Counter, singletonEntity);
+  };
 
   return {
     move,
