@@ -5,8 +5,9 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import tileset from "../../../public/assets/tilesets/new_world.png";
-import MageSpritesheet from "../../../public/assets/characters/mage.png";
+import SummerTileset from "../../../public/assets/tilesets/summer.png";
+import VictorySprite from "../../../public/assets/summ.png";
+import CrystalsSpritesheet from "../../../public/assets/tilesets/crystals.png";
 import PepeSpritesheet from "../../../public/assets/characters/pepe.png";
 import { TileAnimations, Tileset } from "../../artTypes/world";
 import {
@@ -25,14 +26,13 @@ const mainMap = defineMapConfig({
   chunkSize: TILE_WIDTH * 100, // tile size * tile amount
   tileWidth: TILE_WIDTH,
   tileHeight: TILE_HEIGHT,
-  backgroundTile: [Tileset.Grass],
+  backgroundTile: [-1],
   animationInterval: ANIMATION_INTERVAL,
   tileAnimations: TileAnimations,
   layers: {
     layers: {
-      Background: { tilesets: ["Default"] },
-      Foreground: { tilesets: ["Default"] },
-      Interactive: { tilesets: ["Default"] },
+      Background: { tilesets: ["Summer"] },
+      Foreground: { tilesets: ["Summer"] },
     },
     defaultLayer: "Background",
   },
@@ -42,28 +42,15 @@ export const phaserConfig = {
   sceneConfig: {
     [Scenes.Main]: defineSceneConfig({
       assets: {
-        [Assets.Tileset]: {
+        [Assets.SummerTileset]: {
           type: AssetType.Image,
-          key: Assets.Tileset,
-          path: tileset,
+          key: Assets.SummerTileset,
+          path: SummerTileset,
         },
-        [Assets.MainAtlas]: {
-          type: AssetType.MultiAtlas,
-          key: Assets.MainAtlas,
-          // Add a timestamp to the end of the path to prevent caching
-          path: `/assets/atlases/atlas.json?timestamp=${Date.now()}`,
-          options: {
-            imagePath: "/assets/atlases/",
-          },
-        },
-        [Assets.Mage]: {
-          type: AssetType.SpriteSheet,
-          key: Assets.Mage,
-          path: MageSpritesheet,
-          options: {
-            frameHeight: 48,
-            frameWidth: 32,
-          },
+        [Assets.Crystals]: {
+          type: AssetType.Image,
+          key: Assets.Crystals,
+          path: CrystalsSpritesheet,
         },
         [Assets.Pepe]: {
           type: AssetType.SpriteSheet,
@@ -74,43 +61,34 @@ export const phaserConfig = {
             frameWidth: 32,
           },
         },
+        [Assets.Victory]: {
+          type: AssetType.Image,
+          key: Assets.Victory,
+          path: VictorySprite,
+          options: {
+            frameHeight: 512,
+            frameWidth: 528,
+          },
+        },
       },
       maps: {
         [Maps.Main]: mainMap,
       },
       sprites: {
-        [Sprites.Soldier]: {
-          assetKey: Assets.MainAtlas,
-          frame: "sprites/soldier/idle/0.png",
-        },
-        [Sprites.Mage]: {
-          assetKey: Assets.Mage,
-          startFrame: 0,
-        },
         [Sprites.Pepe]: {
           assetKey: Assets.Pepe,
           startFrame: 0,
         },
+        [Sprites.Crystal]: {
+          assetKey: Assets.Crystals,
+          startFrame: 0,
+        },
+        [Sprites.Victory]: {
+          assetKey: Assets.Victory,
+          startFrame: 0,
+        },
       },
       animations: [
-        {
-          key: Animations.SwordsmanIdle,
-          assetKey: Assets.MainAtlas,
-          startFrame: 0,
-          endFrame: 3,
-          frameRate: 6,
-          repeat: -1,
-          prefix: "sprites/soldier/idle/",
-          suffix: ".png",
-        },
-        {
-          key: Animations.MageIdle,
-          assetKey: Assets.Mage,
-          startFrame: 0,
-          endFrame: 5,
-          frameRate: 6,
-          repeat: -1,
-        },
         {
           key: Animations.PepeIdle,
           assetKey: Assets.Pepe,
@@ -153,17 +131,22 @@ export const phaserConfig = {
         },
       ],
       tilesets: {
-        Default: {
-          assetKey: Assets.Tileset,
+        Summer: {
+          assetKey: Assets.SummerTileset,
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
+        },
+        Crystals: {
+          assetKey: Assets.Crystals,
+          tileWidth: 32,
+          tileHeight: 32,
         },
       },
     }),
   },
   scale: defineScaleConfig({
     parent: "phaser-game",
-    zoom: 2,
+    zoom: 3,
     mode: Phaser.Scale.CENTER_BOTH,
   }),
   cameraConfig: defineCameraConfig({

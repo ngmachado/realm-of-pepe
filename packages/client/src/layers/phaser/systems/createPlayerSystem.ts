@@ -11,17 +11,11 @@ import {
   tileCoordToPixelCoord,
 } from "@latticexyz/phaserx";
 import { getMovementAction } from "../utils/InputUtils";
+import { SUMMER_COLLISION_MAP, isCollision } from "../utils/CollisionUtils";
 
 export const createPlayerSystem = (layer: PhaserLayer) => {
-
   let cachedPlayerTilePosition = { x: 0, y: 0 };
-
-  // The collision layer data
-  const collisionLayerData = [
-    {x: 12, y: 0, width: 4, height: 8},
-    {x: 10, y: 11, width: 2, height: 2},
-  ];
-
+  let spawned = false;
 
   const {
     world,
@@ -32,6 +26,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     },
     scenes: {
       Main: {
+        camera,
         objectPool,
         input,
         phaserScene: { tweens },
@@ -44,48 +39,48 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   //   console.log("Game obj down", { pointer, gameObject });
   // });
 
-  input.pointerdown$.subscribe((event) => {
-    if (!event.pointer) return;
+  input.pointerdown$.subscribe(() => {
+    // if (!event.pointer) return;
+    // const x = event.pointer.worldX;
+    // const y = event.pointer.worldY;
 
-    const x = event.pointer.worldX;
-    const y = event.pointer.worldY;
+    // const position = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
 
-    const position = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
-
-    if (position.x === 0 && position.y === 0) return;
-    spawn(position.x, position.y);
+    // if (position.x === 0 && position.y === 0) return;
+    spawn(15, 15);
   });
 
   input.keyboard$.subscribe((e) => {
-    if (e && playerEntity) {
+    if (e && playerEntity && spawned) {
       const action = getMovementAction(e.keyCode);
-      const playerHeight = 1;
-      const playerWidth = 1;
 
       if (action) {
-        
         const tempCachedPlayerTilePosition = cachedPlayerTilePosition;
-        
+
         cachedPlayerTilePosition = {
           x: cachedPlayerTilePosition.x + action.x,
           y: cachedPlayerTilePosition.y + action.y,
-        }
+        };
+
         // if cachedPlayerTilePosition is not set get it from the playerEntity
-        if(cachedPlayerTilePosition.x === 0 && cachedPlayerTilePosition.y === 0) {
-            cachedPlayerTilePosition = getComponentValueStrict(Position, playerEntity);
+        if (
+          cachedPlayerTilePosition.x === 0 &&
+          cachedPlayerTilePosition.y === 0
+        ) {
+          cachedPlayerTilePosition = getComponentValueStrict(
+            Position,
+            playerEntity
+          );
         }
 
         // bool representing if the player is trying to move into a collision tile
-        const hit = collisionLayerData.find(data =>
-            cachedPlayerTilePosition.x < data.x + data.width &&
-            cachedPlayerTilePosition.x + playerWidth > data.x &&
-            cachedPlayerTilePosition.y < data.y + data.height &&
-            cachedPlayerTilePosition.y + playerHeight > data.y
-        ) !== undefined;
-
+        const hit = isCollision(
+          cachedPlayerTilePosition.x,
+          cachedPlayerTilePosition.y
+        );
 
         const pixelPosition = tileCoordToPixelCoord(
-            cachedPlayerTilePosition,
+          cachedPlayerTilePosition,
           TILE_WIDTH,
           TILE_HEIGHT
         );
@@ -93,7 +88,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
         const playerObj = objectPool.get(playerEntity, "Sprite");
 
         console.log(action);
-        if(!hit) {
+        if (!hit) {
           // use then to wait for the animation to finish
           playerObj.setComponent({
             id: "animation",
@@ -102,12 +97,13 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
               sprite.play(action.animation);
             },
           });
+          camera.phaserCamera.pan(pixelPosition.x, pixelPosition.y, 200);
 
-          console.log("move")
-          console.log("cachedPlayerTilePosition", cachedPlayerTilePosition)
+          console.log("move");
+          console.log("cachedPlayerTilePosition", cachedPlayerTilePosition);
           move(cachedPlayerTilePosition.x, cachedPlayerTilePosition.y);
         } else {
-          console.log("hit", hit)
+          console.log("hit", hit);
           playerObj.setComponent({
             id: "animation",
             once: (sprite) => {
@@ -116,8 +112,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
           });
           cachedPlayerTilePosition = tempCachedPlayerTilePosition;
         }
-
-        }
+      }
 
       // playerObj.setComponent({
       //   id: "position",
@@ -128,8 +123,17 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     }
   });
 
+  console.log("OBJECT POOL", { objectPool });
+
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {
     const playerSprite = objectPool.get(entity, "Sprite");
+
+    if (playerEntity === entity) {
+      const position = getComponentValueStrict(Position, entity);
+      cachedPlayerTilePosition.x = position.x;
+      cachedPlayerTilePosition.y = position.y;
+      spawned = true;
+    }
 
     playerSprite.setComponent({
       id: "animation",
@@ -141,7 +145,6 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
 
   defineSystem(world, [Has(Position)], ({ entity }) => {
     if (playerEntity === entity) {
-      console.log("Its me, do nothing");
       return;
     }
 

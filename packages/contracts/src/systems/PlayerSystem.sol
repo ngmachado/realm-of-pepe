@@ -11,7 +11,7 @@ contract PlayerSystem is System {
   // Else send player to 0,0 coordinates.
   function spawn(int32 x, int32 y) public {
     bytes32 entityKey = Utils.addressToEntityKey(_msgSender());
-    Position.set(entityKey, x, y);
+    Position.set(entityKey, 15, 15);
   }
 
   function move(int32 x, int32 y) public {

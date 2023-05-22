@@ -8,7 +8,6 @@ export enum Maps {
 
 export enum Animations {
   SwordsmanIdle = "SwordsmanIdle",
-  MageIdle = "MageIdle",
   PepeIdle = "PepeIdle",
   PepeUp = "PepeUp",
   PepeRight = "PepeRight",
@@ -17,16 +16,16 @@ export enum Animations {
 }
 
 export enum Sprites {
-  Soldier,
-  Mage,
+  Crystal,
   Pepe,
+  Victory,
 }
 
 export enum Assets {
-  MainAtlas = "MainAtlas",
-  Tileset = "Tileset",
-  Mage = "Mage",
+  SummerTileset = "SummerTileset",
+  Crystals = "Crystals",
   Pepe = "Pepe",
+  Victory = "Victory",
 }
 
 export const TILE_HEIGHT = 16;

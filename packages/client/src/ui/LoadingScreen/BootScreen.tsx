@@ -16,8 +16,8 @@ export const BootScreen = ({ children }: Props) => {
 };
 
 const Container = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   position: absolute;
   background-color: rgb(0 0 0 / 100%);
   display: grid;
@@ -30,6 +30,8 @@ const Container = styled.div`
   z-index: 100;
   pointer-events: none;
   color: white;
+  top: 0;
+  left: 0;
 
   div {
     font-family: "Lattice Pixel", sans-serif;
