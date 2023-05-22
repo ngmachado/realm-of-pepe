@@ -173,4 +173,8 @@ contract EvoBuilding is SuperAppBaseCFA, ERC721 {
 		return _ownerOf[id] != address(0);
 	}
 
+	function isAcceptedSuperToken(ISuperToken _superToken) public view override returns (bool) {
+		return address(_superToken) == address(inResourceToken);
+	}
+
 }
