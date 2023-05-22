@@ -97,6 +97,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
             once: (sprite) => {
               sprite.setPosition(pixelPosition.x, pixelPosition.y);
               sprite.play(action.animation);
+              sprite.setScale(3);
             },
           });
           camera.phaserCamera.pan(pixelPosition.x, pixelPosition.y, 200);
@@ -110,6 +111,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
             id: "animation",
             once: (sprite) => {
               sprite.play(action.animation);
+              sprite.setScale(3);
             },
           });
           cachedPlayerTilePosition = tempCachedPlayerTilePosition;

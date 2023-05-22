@@ -5,7 +5,7 @@ export enum InteractiveEvent {
 
 export const InteractiveTiles = [
   { x: 5, y: 5, event: InteractiveEvent.OpenPortal },
-  { x: 12, y: 27, event: InteractiveEvent.StartMining },
+  { x: 29, y: 29, event: InteractiveEvent.StartMining },
 ];
 
 export function getInteractiveTile(x: number, y: number) {

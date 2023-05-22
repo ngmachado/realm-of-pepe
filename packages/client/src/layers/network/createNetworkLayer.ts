@@ -1,17 +1,6 @@
-import { world } from "../../mud/world";
-import { setup } from "../../mud/setup";
 import { getBurnerWallet } from "@latticexyz/std-client";
-import { Framework } from "@superfluid-finance/sdk-core";
-import { ethers } from "ethers";
-import { configureChains } from "@wagmi/core";
-import { foundry } from "@wagmi/chains";
-import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
-import {
-  Entity,
-  EntitySymbol,
-  getComponentValue,
-  getComponentValueStrict,
-} from "@latticexyz/recs";
+import { setup } from "../../mud/setup";
+import { world } from "../../mud/world";
 
 export type NetworkLayer = Awaited<ReturnType<typeof createNetworkLayer>>;
 

@@ -21,16 +21,16 @@ export function createSuperfluidLayer(
     networkConfig.provider.jsonRpcUrl
   );
 
-  const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [foundry],
-    [
-      jsonRpcProvider({
-        rpc: () => ({
-          http: networkConfig.provider.jsonRpcUrl,
-        }),
-      }),
-    ]
-  );
+  // const { chains, publicClient, webSocketPublicClient } = configureChains(
+  //   [foundry],
+  //   [
+  //     jsonRpcProvider({
+  //       rpc: () => ({
+  //         http: networkConfig.provider.jsonRpcUrl,
+  //       }),
+  //     }),
+  //   ]
+  // );
 
   return new Promise((resolve) => {
     SFContractTable.update$.subscribe(async ({ entity, value }) => {
