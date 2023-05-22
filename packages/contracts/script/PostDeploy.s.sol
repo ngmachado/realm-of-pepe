@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { SFContractTable, SFSuperTokenTable } from "../src/codegen/Tables.sol";
+import { SFContractTable, SFSuperTokenTable, SFResourceGeneratorTable } from "../src/codegen/Tables.sol";
 
 import {
   SuperfluidFrameworkDeployer, ISuperToken, ISuperfluid
@@ -47,9 +47,9 @@ contract PostDeploy is Script {
     SuperfluidFrameworkDeployer sfDeployer = new SuperfluidFrameworkDeployer();
     SuperfluidFrameworkDeployer.Framework memory sf = sfDeployer.getFramework();
 
-    console.log("Resolver", address(sf.resolver));
-    console.log("Host", address(sf.host));
-    console.log("CFA", address(sf.cfa));
+    console.log("Host (storage id 1)", address(sf.host));
+    console.log("Resolver (storage id 2)", address(sf.resolver));
+    console.log("CFA (storage id 3)", address(sf.cfa));
     console.log("SuperTokenFactory", address(sf.superTokenFactory));
 
     // register SF base contracts to storage (host (id 1), resolver (id 2) and CFA (id 3)
@@ -61,14 +61,19 @@ contract PostDeploy is Script {
     sf.resolver.addAdmin(address(tokenDeployer));
 
     // deploy all streamable resources tokens
-    // ID = 1
     IPureSuperToken pureSuperSapphire = tokenDeployer.deployPureSuperToken("Sapphire", "SPHR", 1000000000000000 ether);
     SFSuperTokenTable.set(world, 1, address(pureSuperSapphire));
-    // deploy resourceGenerator contract for this token
-    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 10);
+    console.log("SuperToken Sapphire (storage id 1)", address(pureSuperSapphire));
+    // deploy resourceGenerator contract for this token - Player gets 100000 sapphire parts per second
+    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 100000);
+    SFResourceGeneratorTable.set(world, 1, address(resourceGenerator));
+    console.log("ResourceGenerator Sapphire (storage id 1)", address(resourceGenerator));
     // transfer all tokens to resourceGenerator
     pureSuperSapphire.transfer(address(resourceGenerator), 1000000000000000 ether);
-    console.log("SuperToken Sapphire", address(pureSuperSapphire));
+    console.log("> Transfered 1000000000000000 tokens sapphire to ResourceGenerator");
+    uint256 balance = pureSuperSapphire.balanceOf(address(resourceGenerator));
+    console.log("> ResourceGenerator Sapphire balance", balance);
+
   }
 
 
