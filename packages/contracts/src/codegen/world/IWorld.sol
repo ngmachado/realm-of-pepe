@@ -7,11 +7,12 @@ import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
 import { IIncrementSystem } from "./IIncrementSystem.sol";
 import { IPlayerSystem } from "./IPlayerSystem.sol";
+import { ISapphireSystem } from "./ISapphireSystem.sol";
 
 /**
  * The IWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IWorld is IBaseWorld, IIncrementSystem, IPlayerSystem {
+interface IWorld is IBaseWorld, IIncrementSystem, IPlayerSystem, ISapphireSystem {
 
 }

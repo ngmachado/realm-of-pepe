@@ -23,6 +23,10 @@ export function createSystemCalls(
     worldSend("move", [x, y]);
   };
 
+  const setSapphireStream = async () => {
+    worldSend("setSapphireStream", []);
+  }
+
   return {
     move,
     spawn,
