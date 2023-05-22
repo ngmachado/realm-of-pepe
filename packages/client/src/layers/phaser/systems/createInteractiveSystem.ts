@@ -13,7 +13,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       Main: { input },
     },
     networkLayer: {
-      systemCalls: { setSapphireStream },
+      systemCalls: { setSapphireStream, move },
     },
   } = layer;
 
@@ -44,7 +44,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   }
 
   function startMining() {
-    console.log({ superfluid });
     setSapphireStream();
     // console.log({ superfluid });
   }
