@@ -4,7 +4,12 @@ pragma solidity >=0.8.0;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { SFContractTable, SFSuperTokenTable, SFResourceGeneratorTable } from "../src/codegen/Tables.sol";
+import {
+  SFContractTable,
+  SFSuperTokenTable,
+  SFResourceGeneratorTable,
+  SFStoreTable
+} from "../src/codegen/Tables.sol";
 
 import {
   SuperfluidFrameworkDeployer, ISuperToken, ISuperfluid
@@ -18,6 +23,7 @@ import { ISuperApp } from "@superfluid-finance/ethereum-contracts/contracts/inte
 import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
 import { ResourceGenerator } from "../src/superfluid/mining/ResourceGenerator.sol";
 import { EvoBuilding } from "../src/superfluid/building/EvoBuilding.sol";
+import { Store } from "../src/superfluid/store/Store.sol";
 
 contract PostDeploy is Script {
 
@@ -64,16 +70,32 @@ contract PostDeploy is Script {
     IPureSuperToken pureSuperSapphire = tokenDeployer.deployPureSuperToken("Sapphire", "SPHR", 1000000000000000 ether);
     SFSuperTokenTable.set(world, 1, address(pureSuperSapphire));
     console.log("SuperToken Sapphire (storage id 1)", address(pureSuperSapphire));
+
+    IPureSuperToken pureSuperBlue = tokenDeployer.deployPureSuperToken("BluePotion", "Blue", 1000000000000000 ether);
+    SFSuperTokenTable.set(world, 2, address(pureSuperBlue));
+    console.log("SuperToken BluePotion (storage id 2)", address(pureSuperBlue));
+
     // deploy resourceGenerator contract for this token - Player gets 100000 sapphire parts per second
     ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 100000);
     SFResourceGeneratorTable.set(world, 1, address(resourceGenerator));
     console.log("ResourceGenerator Sapphire (storage id 1)", address(resourceGenerator));
-    // transfer all tokens to resourceGenerator
-    pureSuperSapphire.transfer(address(resourceGenerator), 1000000000000000 ether);
-    console.log("> Transfered 1000000000000000 tokens sapphire to ResourceGenerator");
-    uint256 balance = pureSuperSapphire.balanceOf(address(resourceGenerator));
-    console.log("> ResourceGenerator Sapphire balance", balance);
 
+    // deploy Store contract with sapphire as stream in token and blue as stream out token
+    Store store = new Store(pureSuperSapphire, pureSuperBlue, 50, 100000);
+    SFStoreTable.set(world, 1, address(store), address(pureSuperSapphire), address(pureSuperBlue), 100000);
+    // transfer all tokens to resourceGenerator
+    console.log("Store Sapphire/BluePotion (storage id 1)", address(store));
+
+    pureSuperSapphire.transfer(address(resourceGenerator), 1000000000000000 ether);
+    console.log("> Transferred 1000000000000000 tokens sapphire to ResourceGenerator");
+    console.log("> ResourceGenerator Sapphire balance", pureSuperSapphire.balanceOf(address(resourceGenerator)));
+
+    pureSuperBlue.transfer(address(store), 1000000000000000 ether);
+    console.log("> Transferred 1000000000000000 tokens blue potion to store");
+    console.log("> Store BluePotion balance", pureSuperBlue.balanceOf(address(store)));
+
+    // check is store is superApp
+    console.log("Store isApp: ", sf.host.isApp(ISuperApp(address(store))));
   }
 
 
@@ -81,9 +103,9 @@ contract PostDeploy is Script {
     console.log("PostDeploy._setBuildings()");
 
     // Deploy Storage
-    string memory name = "EvoBuilding";
-    string memory symbol = "EVO";
-    address inResourceToken = SFSuperTokenTable.get(world, 1); //token a
+    string memory name = "PepeArmy";
+    string memory symbol = "0_x";
+    address bluePotionAddress = SFSuperTokenTable.get(world, 2); //BluePotion
     int96 maxInFlowRate = 600000; // amount we can stream by second
 
     string[] memory tokenURIs = new string[](4);
@@ -97,14 +119,13 @@ contract PostDeploy is Script {
     tiers[1] = 2 ether;
     tiers[2] = 3 ether;
     tiers[3] = 4 ether;
-    EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(inResourceToken), maxInFlowRate, tokenURIs, tiers);
+    EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(bluePotionAddress), maxInFlowRate, tokenURIs, tiers);
 
-    console.log("EvoBuilding", address(building));
+    console.log("EvoPepeArmy", address(building));
     // must be register as SuperApp
     ISuperfluid host = ISuperfluid(SFContractTable.get(world, 1)); // get host
-    host.isApp(ISuperApp(address(building)));
 
-    console.log("EvoBuilding isApp", host.isApp(ISuperApp(address(building))));
+    console.log("EvoPepeArmy isApp: ", host.isApp(ISuperApp(address(building))));
 
   }
 }

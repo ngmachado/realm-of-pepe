@@ -30,6 +30,26 @@ export default mudConfig({
                 resourceGeneratorAddress: "address",
             }
       },
+      SFStoreTable: {
+            keySchema: {
+                id: "uint32",
+            },
+            schema: {
+                storeAddress: "address",
+                inResource: "address",
+                outResource: "address",
+                maxFlowRate: "int96",
+            }
+      },
+      SFOpenStreamTable: {
+            keySchema: {
+                token: "address",
+                receiver: "address",
+            },
+            schema: {
+                flowRate: "int96",
+            }
+      },
     Position: {
       schema: {
         x: "int32",

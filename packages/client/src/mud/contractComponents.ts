@@ -65,6 +65,39 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SFStoreTable: (() => {
+      const tableId = new TableId("", "SFStoreTable");
+      return defineComponent(
+        world,
+        {
+          storeAddress: RecsType.String,
+          inResource: RecsType.String,
+          outResource: RecsType.String,
+          maxFlowRate: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    SFOpenStreamTable: (() => {
+      const tableId = new TableId("", "SFOpenStreamTabl");
+      return defineComponent(
+        world,
+        {
+          flowRate: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const tableId = new TableId("", "Position");
       return defineComponent(
