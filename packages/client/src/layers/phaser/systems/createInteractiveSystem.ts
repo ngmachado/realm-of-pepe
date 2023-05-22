@@ -5,15 +5,19 @@ import {
   InteractiveEvent,
   getInteractiveTile,
 } from "../utils/InteractriveObjectUtils";
+import { Has, defineEnterSystem } from "@latticexyz/recs";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
     superfluid,
+    world,
     scenes: {
-      Main: { input },
+      Main: { input, objectPool, phaserScene },
     },
     networkLayer: {
-      systemCalls: { setSapphireStream, move },
+      systemCalls: { setSapphireStream },
+      components: { Position },
+      playerEntity,
     },
   } = layer;
 
@@ -47,4 +51,24 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     setSapphireStream();
     // console.log({ superfluid });
   }
+
+  defineEnterSystem(world, [Has(Position)], ({ entity }) => {
+    if (playerEntity === entity) {
+      const playerSprite = objectPool.get(entity, "Sprite");
+      const userSprite = phaserScene.children.getByName(
+        `player-${playerSprite.id}`
+      );
+      console.log("Found user sprite, adding callback");
+      if (userSprite) {
+        console.log("Adding callback");
+        userSprite.on(
+          "changedata",
+          (...args: any) => {
+            console.log("HANDLING CALLBACK", args);
+          },
+          phaserScene
+        );
+      }
+    }
+  });
 };

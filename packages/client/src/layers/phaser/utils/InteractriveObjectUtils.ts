@@ -4,10 +4,15 @@ export enum InteractiveEvent {
 }
 
 export const InteractiveTiles = [
-  { x: 5, y: 5, event: InteractiveEvent.OpenPortal },
-  { x: 29, y: 29, event: InteractiveEvent.StartMining },
+  { x: 28, y: 29, width: 2, height: 2, event: InteractiveEvent.StartMining },
 ];
 
 export function getInteractiveTile(x: number, y: number) {
-  return InteractiveTiles.find((tile) => tile.x === x && tile.y === y);
+  return InteractiveTiles.find(
+    (tile) =>
+      tile.x >= x &&
+      tile.x + tile.width <= x &&
+      tile.y >= y &&
+      tile.y + tile.height <= y
+  );
 }
