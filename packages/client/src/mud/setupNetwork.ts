@@ -30,8 +30,7 @@ export async function setupNetwork() {
     worldAbi: IWorld__factory.abi,
   });
 
-  console.log({ result });
-
+  console.log("Network set up");
   // Request drip from faucet
   const signer = result.network.signer.get();
   if (networkConfig.faucetServiceUrl && signer) {

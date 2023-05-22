@@ -8,6 +8,7 @@ import {
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
+    superfluid,
     scenes: {
       Main: { input },
     },
@@ -29,11 +30,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   function handleInteractiveEvent(event: InteractiveEvent) {
     switch (event) {
       case InteractiveEvent.OpenPortal:
-        openPortal();
+        return openPortal();
+      case InteractiveEvent.StartMining:
+        return startMining();
     }
   }
 
   function openPortal() {
     console.log("Event triggered");
+  }
+
+  function startMining() {
+    console.log({ superfluid });
+    // console.log({ superfluid });
   }
 };

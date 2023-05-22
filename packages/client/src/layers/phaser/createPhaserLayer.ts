@@ -2,6 +2,10 @@ import { createPhaserEngine } from "@latticexyz/phaserx";
 import { namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../network/createNetworkLayer";
 import { registerSystems } from "./systems";
+import {
+  SuperfluidLayer,
+  createSuperfluidLayer,
+} from "../network/createSuperfluidLayer";
 
 export type PhaserLayer = Awaited<ReturnType<typeof createPhaserLayer>>;
 type PhaserEngineConfig = Parameters<typeof createPhaserEngine>[0];
@@ -39,6 +43,8 @@ export const createPhaserLayer = async (
     });
   });
 
+  const superfluid = await createSuperfluidLayer(networkLayer);
+
   const components = {};
 
   const layer = {
@@ -47,6 +53,7 @@ export const createPhaserLayer = async (
     game,
     scenes,
     components,
+    superfluid,
   };
 
   registerSystems(layer);
