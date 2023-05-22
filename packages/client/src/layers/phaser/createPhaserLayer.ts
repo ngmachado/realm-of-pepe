@@ -31,7 +31,7 @@ export const createPhaserLayer = async (
 
   const loaderPlugin = scenes.Main.phaserScene.load.audio(
     "song",
-    "assets/soundtrack/realmofpepe.mp3"
+    "assets/soundtrack/realmofpepe_loqual2.m4a"
   );
   loaderPlugin.start();
 
