@@ -1,18 +1,16 @@
 import { pixelCoordToTileCoord } from "@latticexyz/phaserx";
+import {
+  Entity,
+  Has,
+  defineEnterSystem,
+  getComponentValueStrict,
+} from "@latticexyz/recs";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import {
   InteractiveEvent,
   getInteractiveTile,
 } from "../utils/InteractriveObjectUtils";
-import {
-  Entity,
-  EntitySymbol,
-  Has,
-  defineEnterSystem,
-  getComponentValueStrict,
-} from "@latticexyz/recs";
-import { BigNumber } from "ethers";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
@@ -22,13 +20,12 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       Main: { input, objectPool, phaserScene },
     },
     networkLayer: {
-      singletonEntity,
-      wallet,
+      playerEntityId,
       network: {
         network: { signer },
       },
       systemCalls: { setSapphireStream },
-      components: { Position, SFStoreTable },
+      components: { Position, SFStoreTable, SFSuperTokenTable },
       playerEntity,
     },
   } = layer;
@@ -52,54 +49,75 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         return startMining();
       case InteractiveEvent.StartExchange:
         return startExchange();
+      case InteractiveEvent.MintNFT:
+        return mintNFT();
     }
   }
 
-  async function startExchange() {
-    const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);
+  async function mintNFT() {
+    const nftBuilding = getComponentValueStrict(
+      SFSuperTokenTable,
+      "0x03" as Entity
+    );
+
     const signerToUse = signer.get();
-    if (!storeData || !signerToUse) return;
+    if (!nftBuilding || !signerToUse) return;
 
     const myAddress = await signerToUse.getAddress();
     if (!myAddress) return;
 
-    console.log("Using signer", {
-      signerToUse,
-      myAddress,
-      payload: {
-        flowRate: storeData.maxFlowRate.toString(),
-        receiver: storeData.storeAddress,
-      },
-    });
-
-    // “Sapphire”, “SPHR”
-    // “BluePotion”, “Blue”
-    const superToken = await superfluid.framework.loadSuperToken("SPHR");
-    console.log({ singletonEntity });
+    const superToken = await superfluid.framework.loadSuperToken("Blue");
 
     const superTokenBalance = await superToken.balanceOf({
       account: myAddress,
       providerOrSigner: signerToUse,
     });
 
-    console.log({ superTokenBalance });
-
+    console.log("Blue balance", superTokenBalance);
+    console.log("NFT Payload", {
+      flowRate: "1",
+      receiver: nftBuilding.superTokenAddress,
+      overrides: {
+        gasPrice: "0",
+      },
+    });
     const transactionResult = await superToken
       .createFlow({
         flowRate: "1",
+        receiver: nftBuilding.superTokenAddress,
+        overrides: {
+          gasPrice: "0",
+        },
+      })
+      .exec(signerToUse);
+  }
+
+  async function startExchange() {
+    const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);
+    const signerToUse = signer.get();
+    if (!storeData || !signerToUse || !playerEntityId) return;
+
+    const superToken = await superfluid.framework.loadSuperToken("SPHR");
+
+    const superTokenBalance = await superToken.balanceOf({
+      account: playerEntityId,
+      providerOrSigner: signerToUse,
+    });
+
+    console.log("Sapphire balance", { superTokenBalance });
+    const transactionResult = await superToken
+      .createFlow({
+        flowRate: "1000",
         receiver: storeData.storeAddress,
         overrides: {
           gasPrice: "0",
         },
       })
       .exec(signerToUse);
-
-    console.log({ transactionResult });
   }
 
   function startMining() {
     setSapphireStream();
-    // console.log({ superfluid });
   }
 
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {
