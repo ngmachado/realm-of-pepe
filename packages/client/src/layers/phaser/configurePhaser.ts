@@ -50,9 +50,13 @@ export const phaserConfig = {
           path: SummerTileset,
         },
         [Assets.Crystals]: {
-          type: AssetType.Image,
+          type: AssetType.SpriteSheet,
           key: Assets.Crystals,
           path: CrystalsSpritesheet,
+          options: {
+            frameWidth: 32,
+            frameHeight: 32,
+          },
         },
         [Assets.Pepe]: {
           type: AssetType.SpriteSheet,
@@ -138,11 +142,6 @@ export const phaserConfig = {
           assetKey: Assets.SummerTileset,
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
-        },
-        Crystals: {
-          assetKey: Assets.Crystals,
-          tileWidth: 32,
-          tileHeight: 32,
         },
       },
     }),
