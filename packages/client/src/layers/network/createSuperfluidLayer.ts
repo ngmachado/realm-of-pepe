@@ -39,7 +39,7 @@ export function createSuperfluidLayer(
         const framework = await Framework.create({
           chainId: networkConfig.provider.chainId,
           provider,
-          resolverAddress: "0x9967D6bc6f5093d036D10ea69B26B48F68780c89", //todo: get from mud
+          resolverAddress: value[0]?.contractAddress,
           protocolReleaseVersion: "test",
         });
         resolve({ framework });
