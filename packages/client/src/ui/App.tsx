@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useNetworkLayer } from "./hooks/useNetworkLayer";
 import { useStore } from "../store";
 import { PhaserLayer } from "./PhaserLayer";
 import { UIRoot } from "./UIRoot";
+import { useNetworkLayer } from "./hooks/useNetworkLayer";
 
 export const App = () => {
   const networkLayer = useNetworkLayer();

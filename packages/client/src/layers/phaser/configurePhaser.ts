@@ -25,7 +25,7 @@ import {
 const ANIMATION_INTERVAL = 200;
 
 const mainMap = defineMapConfig({
-  chunkSize: TILE_WIDTH * 100, // tile size * tile amount
+  chunkSize: TILE_WIDTH * 1000, // tile size * tile amount
   tileWidth: TILE_WIDTH,
   tileHeight: TILE_HEIGHT,
   backgroundTile: [-1],
@@ -158,5 +158,5 @@ export const phaserConfig = {
     maxZoom: 2,
     minZoom: 2,
   }),
-  cullingChunkSize: TILE_HEIGHT * 16,
+  cullingChunkSize: TILE_HEIGHT * 32,
 };
