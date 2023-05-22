@@ -76,7 +76,7 @@ contract PostDeploy is Script {
     console.log("SuperToken BluePotion (storage id 2)", address(pureSuperBlue));
 
     // deploy resourceGenerator contract for this token - Player gets 100000 sapphire parts per second
-    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 100000);
+    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 100000000000000000);
     SFResourceGeneratorTable.set(world, 1, address(resourceGenerator));
     console.log("ResourceGenerator Sapphire (storage id 1)", address(resourceGenerator));
 
