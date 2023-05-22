@@ -24,6 +24,19 @@ export const createPhaserLayer = async (
   camera.phaserCamera.setBounds(0, 0, 528, 520);
   camera.phaserCamera.centerOn(15, 15);
 
+  const loaderPlugin = scenes.Main.phaserScene.load.audio(
+    "song",
+    "assets/soundtrack/realmofpepe.mp3"
+  );
+  loaderPlugin.start();
+
+  loaderPlugin.on("complete", () => {
+    console.log("Music loaded!");
+    const music = scenes.Main.phaserScene.sound.add("song");
+    music.setLoop(true);
+    scenes.Main.phaserScene.sound.play("song");
+  });
+
   const components = {};
 
   const layer = {
