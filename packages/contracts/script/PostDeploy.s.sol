@@ -122,6 +122,7 @@ contract PostDeploy is Script {
     EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(bluePotionAddress), maxInFlowRate, tokenURIs, tiers);
 
     console.log("EvoPepeArmy", address(building));
+    SFSuperTokenTable.set(world, 3, address(address(building)));
     // must be register as SuperApp
     ISuperfluid host = ISuperfluid(SFContractTable.get(world, 1)); // get host
 
