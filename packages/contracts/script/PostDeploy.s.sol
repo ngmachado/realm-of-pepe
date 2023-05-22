@@ -81,7 +81,7 @@ contract PostDeploy is Script {
     console.log("ResourceGenerator Sapphire (storage id 1)", address(resourceGenerator));
 
     // deploy Store contract with sapphire as stream in token and blue as stream out token
-    Store store = new Store(pureSuperSapphire, pureSuperBlue, 50, 100000);
+    Store store = new Store(pureSuperSapphire, pureSuperBlue, 0, 100000);
     SFStoreTable.set(world, 1, address(store), address(pureSuperSapphire), address(pureSuperBlue), 100000);
     // transfer all tokens to resourceGenerator
     console.log("Store Sapphire/BluePotion (storage id 1)", address(store));
