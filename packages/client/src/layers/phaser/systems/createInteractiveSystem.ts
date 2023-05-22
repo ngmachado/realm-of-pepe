@@ -88,6 +88,9 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       .createFlow({
         flowRate: "1",
         receiver: storeData.storeAddress,
+        overrides: {
+          gasPrice: "0",
+        },
       })
       .exec(signerToUse);
 
