@@ -13,7 +13,7 @@ export function createSuperfluidLayer(
   networkLayer: NetworkLayer
 ): Promise<SuperfluidLayer> {
   const {
-    networkConfig,
+    network: { networkConfig },
     components: { SFContractTable },
   } = networkLayer;
 

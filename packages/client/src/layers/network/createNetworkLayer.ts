@@ -20,7 +20,7 @@ export const createNetworkLayer = async () => {
     playerEntity,
     systemCalls,
     components,
-    networkConfig: network.networkConfig,
+    network,
     wallet: getBurnerWallet(),
   };
 };

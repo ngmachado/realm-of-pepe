@@ -5,7 +5,14 @@ import {
   InteractiveEvent,
   getInteractiveTile,
 } from "../utils/InteractriveObjectUtils";
-import { Has, defineEnterSystem } from "@latticexyz/recs";
+import {
+  Entity,
+  EntitySymbol,
+  Has,
+  defineEnterSystem,
+  getComponentValueStrict,
+} from "@latticexyz/recs";
+import { BigNumber } from "ethers";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
@@ -15,8 +22,13 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       Main: { input, objectPool, phaserScene },
     },
     networkLayer: {
+      singletonEntity,
+      wallet,
+      network: {
+        network: { signer },
+      },
       systemCalls: { setSapphireStream },
-      components: { Position },
+      components: { Position, SFStoreTable },
       playerEntity,
     },
   } = layer;
@@ -36,15 +48,50 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   function handleInteractiveEvent(event: InteractiveEvent) {
     switch (event) {
-      case InteractiveEvent.OpenPortal:
-        return openPortal();
       case InteractiveEvent.StartMining:
         return startMining();
+      case InteractiveEvent.StartExchange:
+        return startExchange();
     }
   }
 
-  function openPortal() {
-    console.log("Event triggered");
+  async function startExchange() {
+    const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);
+    const signerToUse = signer.get();
+    if (!storeData || !signerToUse) return;
+
+    const myAddress = await signerToUse.getAddress();
+    if (!myAddress) return;
+
+    console.log("Using signer", {
+      signerToUse,
+      myAddress,
+      payload: {
+        flowRate: storeData.maxFlowRate.toString(),
+        receiver: storeData.storeAddress,
+      },
+    });
+
+    // “Sapphire”, “SPHR”
+    // “BluePotion”, “Blue”
+    const superToken = await superfluid.framework.loadSuperToken("SPHR");
+    console.log({ singletonEntity });
+
+    const superTokenBalance = await superToken.balanceOf({
+      account: myAddress,
+      providerOrSigner: signerToUse,
+    });
+
+    console.log({ superTokenBalance });
+
+    const transactionResult = await superToken
+      .createFlow({
+        flowRate: "1",
+        receiver: storeData.storeAddress,
+      })
+      .exec(signerToUse);
+
+    console.log({ transactionResult });
   }
 
   function startMining() {
