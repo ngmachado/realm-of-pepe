@@ -75,7 +75,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     console.log("Blue balance", superTokenBalance);
     console.log("NFT Payload", {
-      flowRate: "1",
+      flowRate: "1000",
       receiver: nftBuilding.superTokenAddress,
       overrides: {
         gasPrice: "0",
@@ -83,7 +83,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     });
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "1",
+        flowRate: "1000",
         receiver: nftBuilding.superTokenAddress,
         overrides: {
           gasPrice: "0",
@@ -107,7 +107,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     console.log("Sapphire balance", { superTokenBalance });
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "1000",
+        flowRate: "800000",
         receiver: storeData.storeAddress,
         overrides: {
           gasPrice: "0",

@@ -4,18 +4,22 @@ import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { ethers } from "ethers";
 import { foundry } from "viem/chains";
 import { NetworkLayer } from "./createNetworkLayer";
+import { StreamStore } from "../phaser/utils/StreamStore";
 
 export interface SuperfluidLayer {
   framework: Framework;
+  streamStore: StreamStore;
 }
 
 export function createSuperfluidLayer(
   networkLayer: NetworkLayer
 ): Promise<SuperfluidLayer> {
   const {
-    network: { networkConfig },
+    network,
     components: { SFContractTable },
   } = networkLayer;
+
+  const { networkConfig } = network;
 
   const provider = new ethers.providers.JsonRpcProvider(
     networkConfig.provider.jsonRpcUrl
@@ -42,7 +46,21 @@ export function createSuperfluidLayer(
           resolverAddress: value[0]?.contractAddress,
           protocolReleaseVersion: "test",
         });
-        resolve({ framework });
+        console.log("INITIALIZED NETWORK", {
+          network,
+          wallet1: network.playerEntity,
+          wallet2: network.playerEntityId,
+        });
+
+        const streamStore = new StreamStore(
+          framework,
+          network.playerEntityId as string,
+          provider
+        );
+
+        await streamStore.init();
+
+        resolve({ framework, streamStore });
       }
     });
   });
