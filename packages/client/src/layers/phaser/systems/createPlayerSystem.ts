@@ -51,6 +51,8 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   });
 
   input.keyboard$.subscribe((e) => {
+    // don't do anything if the key is released
+    if (e.isUp) return;
     if (e && playerEntity && spawned) {
       const action = getMovementAction(e.keyCode);
 
