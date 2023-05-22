@@ -16,7 +16,7 @@ import {
 
 import { ISuperApp } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperApp.sol";
 import { IPureSuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/IPureSuperToken.sol";
-
+import { ResourceGenerator } from "../src/superfluid/mining/ResourceGenerator.sol";
 import { EvoBuilding } from "../src/superfluid/building/EvoBuilding.sol";
 
 contract PostDeploy is Script {
@@ -61,22 +61,16 @@ contract PostDeploy is Script {
     sf.resolver.addAdmin(address(tokenDeployer));
 
     // deploy all streamable resources tokens
-    IPureSuperToken pureSuperTokenA = tokenDeployer.deployPureSuperToken("TokenA", "TokenA", 1000000000000000 ether);
-    IPureSuperToken pureSuperTokenB = tokenDeployer.deployPureSuperToken("TokenB", "TokenB", 1000000000000000 ether);
-    IPureSuperToken pureSuperTokenC = tokenDeployer.deployPureSuperToken("TokenC", "TokenC", 1000000000000000 ether);
-    IPureSuperToken pureSuperTokenD = tokenDeployer.deployPureSuperToken("TokenD", "TokenD", 1000000000000000 ether);
-
-    SFSuperTokenTable.set(world, 1, address(pureSuperTokenA));
-    SFSuperTokenTable.set(world, 2, address(pureSuperTokenB));
-    SFSuperTokenTable.set(world, 3, address(pureSuperTokenC));
-    SFSuperTokenTable.set(world, 4, address(pureSuperTokenD));
-
-    console.log("SuperToken A", address(pureSuperTokenA));
-    console.log("SuperToken B", address(pureSuperTokenB));
-    console.log("SuperToken C", address(pureSuperTokenC));
-    console.log("SuperToken D", address(pureSuperTokenD));
-
+    // ID = 1
+    IPureSuperToken pureSuperSapphire = tokenDeployer.deployPureSuperToken("Sapphire", "SPHR", 1000000000000000 ether);
+    SFSuperTokenTable.set(world, 1, address(pureSuperSapphire));
+    // deploy resourceGenerator contract for this token
+    ResourceGenerator resourceGenerator = new ResourceGenerator(pureSuperSapphire, 10);
+    // transfer all tokens to resourceGenerator
+    pureSuperSapphire.transfer(address(resourceGenerator), 1000000000000000 ether);
+    console.log("SuperToken Sapphire", address(pureSuperSapphire));
   }
+
 
   function _setBuildings(IWorld world) internal {
     console.log("PostDeploy._setBuildings()");

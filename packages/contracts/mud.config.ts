@@ -22,6 +22,14 @@ export default mudConfig({
             superTokenAddress: "address",
         }
   },
+      SFResourceGeneratorTable: {
+            keySchema: {
+                id: "uint32",
+            },
+            schema: {
+                resourceGeneratorAddress: "address",
+            }
+      },
     Position: {
       schema: {
         x: "int32",

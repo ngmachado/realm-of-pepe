@@ -50,6 +50,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SFResourceGeneratorTable: (() => {
+      const tableId = new TableId("", "SFResourceGenera");
+      return defineComponent(
+        world,
+        {
+          resourceGeneratorAddress: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const tableId = new TableId("", "Position");
       return defineComponent(

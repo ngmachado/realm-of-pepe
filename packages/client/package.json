@@ -23,6 +23,7 @@
     "@latticexyz/std-client": "2.0.0-alpha.1.170+76be5d21",
     "@latticexyz/utils": "2.0.0-alpha.1.170+76be5d21",
     "@latticexyz/world": "2.0.0-alpha.1.170+76be5d21",
+    "@superfluid-finance/sdk-core": "^0.6.6",
     "@wagmi/chains": "^0.2.14",
     "contracts": "workspace:*",
     "ethers": "^5.7.2",
