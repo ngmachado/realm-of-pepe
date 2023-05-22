@@ -31,10 +31,12 @@ export const createPhaserLayer = async (
   loaderPlugin.start();
 
   loaderPlugin.on("complete", () => {
-    console.log("Music loaded!");
-    const music = scenes.Main.phaserScene.sound.add("song");
-    music.setLoop(true);
-    scenes.Main.phaserScene.sound.play("song");
+    scenes.Main.phaserScene.sound.add("song", {
+      loop: true,
+    });
+    scenes.Main.phaserScene.sound.play("song", {
+      loop: true,
+    });
   });
 
   const components = {};

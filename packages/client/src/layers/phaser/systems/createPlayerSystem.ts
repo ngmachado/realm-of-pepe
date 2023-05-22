@@ -139,6 +139,10 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
       id: "animation",
       once: (sprite) => {
         sprite.play(Animations.PepeIdle);
+        sprite.setPosition(
+          cachedPlayerTilePosition.x,
+          cachedPlayerTilePosition.y
+        );
       },
     });
   });

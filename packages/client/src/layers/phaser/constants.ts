@@ -7,7 +7,6 @@ export enum Maps {
 }
 
 export enum Animations {
-  SwordsmanIdle = "SwordsmanIdle",
   PepeIdle = "PepeIdle",
   PepeUp = "PepeUp",
   PepeRight = "PepeRight",
