@@ -24,7 +24,7 @@ export function createSystemCalls(
   };
 
   const setSapphireStream = async () => {
-    const tx = worldSend("setSapphireStream", []);
+    const tx = await worldSend("setSapphireStream", []);
     await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
    // return getComponentValue(Counter, singletonEntity);
   };
@@ -33,5 +33,6 @@ export function createSystemCalls(
     move,
     spawn,
     increment,
+    setSapphireStream,
   };
 }
