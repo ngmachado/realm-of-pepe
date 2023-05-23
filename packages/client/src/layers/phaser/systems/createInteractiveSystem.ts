@@ -64,6 +64,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   const storeDialog = addTooltip(Assets.Store, 24, 8, startExchange);
   const mineDialog = addTooltip(Assets.Mine, 26, 30, startMining);
   const nftDialog = addTooltip(Assets.NFT, 44, 13, mintNFT);
+  const caveDialog = addTooltip(Assets.Cave, 3, 13, enterCave);
 
   playerLocation.subscribe((newLocation) => {
     const action = getInteractiveTile(newLocation.x, newLocation.y);
@@ -78,10 +79,14 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       case InteractiveEvent.MintNFT:
         nftDialog.setVisible(true);
         break;
+      case InteractiveEvent.EnterCave:
+        caveDialog.setVisible(true);
+        break;
       default:
         mineDialog.setVisible(false);
         storeDialog.setVisible(false);
         nftDialog.setVisible(false);
+        caveDialog.setVisible(false);
     }
   });
 
@@ -190,6 +195,10 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     setTimeout(() => {
       superfluid.streamStore.loadRealTimeBalance("SPHR");
     }, 2000);
+  }
+
+  async function enterCave() {
+    console.log("WHOOOOOO YOUR ARE AMAZING!!!");
   }
 
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {
