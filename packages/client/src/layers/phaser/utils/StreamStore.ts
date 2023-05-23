@@ -30,6 +30,7 @@ export class StreamStore {
     this.framework = framework;
     this.wallet = wallet;
     this.provider = provider;
+    this.nftEvo.next(null);
   }
 
   async init() {

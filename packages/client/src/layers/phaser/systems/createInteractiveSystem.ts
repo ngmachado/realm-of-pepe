@@ -220,7 +220,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   function toggleInventory() {
     showInventory = !showInventory;
-
+    console.log("EVO", streamStore.nftEvo);
     if (showInventory) {
       backdrop.setVisible(true);
       bookDialog.setVisible(true);
