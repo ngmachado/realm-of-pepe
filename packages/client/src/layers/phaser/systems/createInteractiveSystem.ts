@@ -37,6 +37,16 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
+  const inventoryButton = phaserScene.add
+    .image(phaserScene.cameras.main.width - 178, 0, Assets.InventoryBtn)
+    .setOrigin(0, 0)
+    .setDepth(18)
+    .setScrollFactor(0)
+    .setInteractive()
+    .on("pointerdown", () => {
+      toggleInventory();
+    });
+
   const backdrop = phaserScene.add
     .rectangle(
       0,
@@ -58,7 +68,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setScrollFactor(0);
 
   const bookDialog = addDialog(Assets.Book, () => {
-    bookDialog.setVisible(false);
+    toggleInventory();
   }).setScrollFactor(0);
 
   const storeDialog = addTooltip(Assets.Store, 24, 8, startExchange);
@@ -90,6 +100,20 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     }
   });
 
+  let showInventory = false;
+
+  function toggleInventory() {
+    showInventory = !showInventory;
+    console.log("TOGGLE INV");
+
+    if (showInventory) {
+      backdrop.setVisible(true);
+      bookDialog.setVisible(true);
+    } else {
+      backdrop.setVisible(false);
+      bookDialog.setVisible(false);
+    }
+  }
   function addTooltip(
     image: string,
     x: number,

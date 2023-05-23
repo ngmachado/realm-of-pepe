@@ -17,6 +17,8 @@ import NFTSprite from "../../../public/assets/dialogs/nft.png";
 import NFTDisabledSprite from "../../../public/assets/dialogs/nftdisabled.png";
 import StoreSprite from "../../../public/assets/dialogs/store.png";
 import StoreDisabledSprite from "../../../public/assets/dialogs/storedisabled.png";
+import StoreEnterSprite from "../../../public/assets/dialogs/storedialog.png";
+import ForgeEnterSprite from "../../../public/assets/dialogs/forgedialog.png";
 
 import BookSprite from "../../../public/assets/dialogs/book.png";
 import IntroSprite from "../../../public/assets/dialogs/intro.png";
@@ -125,6 +127,16 @@ export const phaserConfig = {
           type: AssetType.Image,
           key: Assets.StoreDisabled,
           path: StoreDisabledSprite,
+        },
+        [Assets.StoreEnter]: {
+          type: AssetType.Image,
+          key: Assets.StoreEnter,
+          path: StoreEnterSprite,
+        },
+        [Assets.ForgeEnter]: {
+          type: AssetType.Image,
+          key: Assets.ForgeEnter,
+          path: ForgeEnterSprite,
         },
         [Assets.Book]: {
           type: AssetType.Image,
