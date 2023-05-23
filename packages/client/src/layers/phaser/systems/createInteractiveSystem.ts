@@ -1,4 +1,7 @@
-import { pixelCoordToTileCoord } from "@latticexyz/phaserx";
+import {
+  pixelCoordToTileCoord,
+  tileCoordToPixelCoord,
+} from "@latticexyz/phaserx";
 import {
   Entity,
   Has,
@@ -10,14 +13,18 @@ import { PhaserLayer } from "../createPhaserLayer";
 import {
   InteractiveEvent,
   getInteractiveTile,
+  getTilesToInteractWith,
 } from "../utils/InteractriveObjectUtils";
+import { waitForTransaction } from "@wagmi/core";
+import { Address } from "viem";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
+    playerLocation,
     superfluid,
     world,
     scenes: {
-      Main: { input, objectPool, phaserScene },
+      Main: { objectPool, phaserScene },
     },
     networkLayer: {
       playerEntityId,
@@ -30,28 +37,52 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
-  input.pointerdown$.subscribe((event, ...rest) => {
-    console.log({ ...event, rest });
+  const storeDialog = addDialog("store", Assets.Store, 24, 8, startExchange);
+  const mineDialog = addDialog("mine", Assets.Mine, 26, 30, startMining);
+  const nftDialog = addDialog("nft", Assets.NFT, 44, 13, mintNFT);
 
-    const x = event.pointer.worldX;
-    const y = event.pointer.worldY;
+  playerLocation.subscribe((newLocation) => {
+    console.log("Interact?", newLocation.x, newLocation.y);
 
-    const position = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
-    console.log("Clicked on tile", position.x, position.y);
+    const action = getInteractiveTile(newLocation.x, newLocation.y);
 
-    const eventTile = getInteractiveTile(position.x, position.y);
-    if (eventTile) handleInteractiveEvent(eventTile.event);
+    switch (action?.event) {
+      case InteractiveEvent.StartMining:
+        mineDialog.setVisible(true);
+        break;
+      case InteractiveEvent.StartExchange:
+        storeDialog.setVisible(true);
+        break;
+      case InteractiveEvent.MintNFT:
+        nftDialog.setVisible(true);
+        break;
+      default:
+        mineDialog.setVisible(false);
+        storeDialog.setVisible(false);
+        nftDialog.setVisible(false);
+    }
   });
 
-  function handleInteractiveEvent(event: InteractiveEvent) {
-    switch (event) {
-      case InteractiveEvent.StartMining:
-        return startMining();
-      case InteractiveEvent.StartExchange:
-        return startExchange();
-      case InteractiveEvent.MintNFT:
-        return mintNFT();
-    }
+  function addDialog(
+    name: string,
+    image: string,
+    x: number,
+    y: number,
+    onClick: () => void
+  ) {
+    const pixelCoordinates = tileCoordToPixelCoord(
+      { x, y },
+      TILE_WIDTH,
+      TILE_HEIGHT
+    );
+    return phaserScene.add
+      .image(pixelCoordinates.x, pixelCoordinates.y, image)
+      .setName(name)
+      .setOrigin(0, 0)
+      .setDepth(17)
+      .setInteractive()
+      .setVisible(false)
+      .on("pointerdown", onClick);
   }
 
   async function mintNFT() {
@@ -68,29 +99,23 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     const superToken = await superfluid.framework.loadSuperToken("SPHR");
 
-    const superTokenBalance = await superToken.balanceOf({
-      account: myAddress,
-      providerOrSigner: signerToUse,
-    });
-
-    console.log("SPHR balance", superTokenBalance);
-    console.log("NFT Payload", {
-      flowRate: "500000000",
-      receiver: nftBuilding.superTokenAddress,
-      overrides: {
-        gasPrice: "0",
-      },
-    });
-
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "100",
+        flowRate: "500000000",
         receiver: nftBuilding.superTokenAddress,
         overrides: {
           gasPrice: "0",
         },
       })
       .exec(signerToUse);
+
+    console.log("Waiting for transaction");
+    await waitForTransaction({
+      hash: transactionResult.hash as Address,
+    });
+    console.log("Transaction went through");
+    // This can be async
+    superfluid.streamStore.loadRealTimeBalance("SPHR");
 
     phaserScene.add
       .sprite(46, 21, Assets.Crystals, 5)
@@ -105,25 +130,33 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     const superToken = await superfluid.framework.loadSuperToken("SPHR");
 
-    const superTokenBalance = await superToken.balanceOf({
-      account: playerEntityId,
-      providerOrSigner: signerToUse,
-    });
-
-    console.log("Sapphire balance", { superTokenBalance });
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "100000",
+        flowRate: "5000000000000",
         receiver: storeData.storeAddress,
         overrides: {
           gasPrice: "0",
         },
       })
       .exec(signerToUse);
+
+    console.log("Waiting for transaction");
+    await waitForTransaction({
+      hash: transactionResult.hash as Address,
+    });
+    console.log("Transaction went through");
+    // Updating real time balances for the tokens
+    superfluid.streamStore.loadRealTimeBalance("SPHR");
+    superfluid.streamStore.loadRealTimeBalance("Blue");
   }
 
-  function startMining() {
-    setSapphireStream();
+  async function startMining() {
+    await setSapphireStream();
+    // TODO: This is a hacky way, how to get callback?
+    console.log("Fetching SPHR");
+    setTimeout(() => {
+      superfluid.streamStore.loadRealTimeBalance("SPHR");
+    }, 2000);
   }
 
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {

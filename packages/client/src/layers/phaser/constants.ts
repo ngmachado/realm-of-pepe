@@ -18,6 +18,13 @@ export enum Sprites {
   Crystal,
   Pepe,
   Background,
+  Cave,
+  Mine,
+  MineDisabled,
+  NFT,
+  NFTDisabled,
+  Store,
+  StoreDisabled,
 }
 
 export enum Assets {
@@ -25,6 +32,14 @@ export enum Assets {
   Crystals = "Crystals",
   Pepe = "Pepe",
   Background = "Background",
+
+  Cave = "Cave",
+  Mine = "Mine",
+  MineDisabled = "MineDisabled",
+  NFT = "NFT",
+  NFTDisabled = "NFTDisabled",
+  Store = "Store",
+  StoreDisabled = "StoreDisabled",
 }
 
 export const TILE_HEIGHT = 48;

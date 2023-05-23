@@ -7,6 +7,7 @@ import {
   createSuperfluidLayer,
 } from "../network/createSuperfluidLayer";
 import { WORLD_HEIGHT, WORLD_WIDTH } from "./constants";
+import { Subject } from "rxjs";
 
 export type PhaserLayer = Awaited<ReturnType<typeof createPhaserLayer>>;
 type PhaserEngineConfig = Parameters<typeof createPhaserEngine>[0];
@@ -46,9 +47,12 @@ export const createPhaserLayer = async (
 
   const superfluid = await createSuperfluidLayer(networkLayer);
 
+  const playerLocation = new Subject<{ x: number; y: number }>();
+
   const components = {};
 
   const layer = {
+    playerLocation,
     networkLayer,
     world,
     game,

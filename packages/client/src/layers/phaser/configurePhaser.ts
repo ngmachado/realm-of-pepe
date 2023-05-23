@@ -9,6 +9,15 @@ import BgSprite from "../../../public/assets/bg.png";
 import PepeSpritesheet from "../../../public/assets/characters/pepe.png";
 import CrystalsSpritesheet from "../../../public/assets/tilesets/crystals.png";
 import SummerTileset from "../../../public/assets/tilesets/summer.png";
+
+import CaveSprite from "../../../public/assets/dialogs/cave.png";
+import MineSprite from "../../../public/assets/dialogs/mine.png";
+import MineDisabledSprite from "../../../public/assets/dialogs/minedisabled.png";
+import NFTSprite from "../../../public/assets/dialogs/nft.png";
+import NFTDisabledSprite from "../../../public/assets/dialogs/nftdisabled.png";
+import StoreSprite from "../../../public/assets/dialogs/store.png";
+import StoreDisabledSprite from "../../../public/assets/dialogs/storedisabled.png";
+
 import { TileAnimations } from "../../artTypes/world";
 import {
   Animations,
@@ -76,6 +85,41 @@ export const phaserConfig = {
             frameHeight: WORLD_HEIGHT,
             frameWidth: WORLD_WIDTH,
           },
+        },
+        [Assets.Cave]: {
+          type: AssetType.Image,
+          key: Assets.Cave,
+          path: CaveSprite,
+        },
+        [Assets.Mine]: {
+          type: AssetType.Image,
+          key: Assets.Mine,
+          path: MineSprite,
+        },
+        [Assets.MineDisabled]: {
+          type: AssetType.Image,
+          key: Assets.MineDisabled,
+          path: MineDisabledSprite,
+        },
+        [Assets.NFT]: {
+          type: AssetType.Image,
+          key: Assets.NFT,
+          path: NFTSprite,
+        },
+        [Assets.NFTDisabled]: {
+          type: AssetType.Image,
+          key: Assets.NFTDisabled,
+          path: NFTDisabledSprite,
+        },
+        [Assets.Store]: {
+          type: AssetType.Image,
+          key: Assets.Store,
+          path: StoreSprite,
+        },
+        [Assets.StoreDisabled]: {
+          type: AssetType.Image,
+          key: Assets.StoreDisabled,
+          path: StoreDisabledSprite,
         },
       },
       maps: {

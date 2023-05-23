@@ -1,14 +1,26 @@
 import { Provider } from "@ethersproject/providers";
 import { Framework } from "@superfluid-finance/sdk-core";
-import { Signer } from "ethers";
+import { Subject } from "rxjs";
+import { getUnixTime } from "date-fns";
+
+export interface RealTimeBalance {
+  flowRate: string;
+  balance: string;
+  timestamp: number;
+}
+
+interface TokenRealtimeBalance extends RealTimeBalance {
+  token: string;
+}
 
 const TOKENS_TO_LOAD = ["SPHR", "Blue"];
 
 export class StreamStore {
-  activeFlows = new Map();
+  realtimeBalances = new Map();
   wallet: string;
   framework: Framework;
   provider: Provider;
+  realtimeBalanceObservable = new Subject<TokenRealtimeBalance>();
 
   constructor(framework: Framework, wallet: string, provider: Provider) {
     this.framework = framework;
@@ -25,21 +37,38 @@ export class StreamStore {
   }
 
   async loadRealTimeBalance(token: string) {
-    console.log("Loading token", token, this.framework);
     const superToken = await this.framework.loadSuperToken(token);
+    const [realTimeFlow, realTimeBalance] = await Promise.all([
+      superToken.getNetFlow({
+        account: this.wallet,
+        providerOrSigner: this.provider,
+      }),
+      superToken.realtimeBalanceOf({
+        account: this.wallet,
+        providerOrSigner: this.provider,
+      }),
+    ]);
 
-    const realTimeBalance = await superToken.realtimeBalanceOf({
-      account: this.wallet,
-      providerOrSigner: this.provider,
+    console.log("Real time balance loaded", {
+      token,
+      superToken,
+      realTimeFlow,
+      realTimeBalance,
     });
 
-    console.log("Real time balance loaded", { token, realTimeBalance });
+    const RTB = {
+      flowRate: realTimeFlow,
+      balance: realTimeBalance.availableBalance,
+      timestamp: getUnixTime(realTimeBalance.timestamp),
+    };
+
+    this.realtimeBalances.set(token, RTB);
+    this.realtimeBalanceObservable.next({ ...RTB, token });
 
     return realTimeBalance;
   }
 
   async loadBalanceOf(token: string, account: string) {
-    console.log("Loading token", token, this.framework);
     const superToken = await this.framework.loadSuperToken(token);
 
     const superTokenBalance = await superToken.balanceOf({

@@ -182,10 +182,6 @@ export function createMapSystem(layer: PhaserLayer) {
     "0x03" as Entity
   );
 
-  // console.log("NFT BUILDING ADDRESS", nftBuilding);
-
-  // streamStore.loadBalanceOf("SPHR", nftBuilding.superTokenAddress);
-  console.log("Player entity exists", playerEntityId);
   if (playerEntityId) {
     readEvoContract();
   }
@@ -198,12 +194,9 @@ export function createMapSystem(layer: PhaserLayer) {
     );
 
     const result = await contract.callStatic.balanceOf(playerEntityId);
-    console.log("NFT RESULT", result);
     if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
-      console.log("Render NFT");
-
       const tokenURI = await contract.callStatic.tokenURI(1);
-      console.log({ tokenURI });
+      console.log("NFT URI", { tokenURI });
     } else {
       console.log("NO NFT");
     }

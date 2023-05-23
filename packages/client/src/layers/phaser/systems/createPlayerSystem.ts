@@ -18,6 +18,7 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   let spawned = false;
 
   const {
+    playerLocation,
     world,
     networkLayer: {
       components: { Position },
@@ -40,13 +41,6 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   // });
 
   input.pointerdown$.subscribe(() => {
-    // if (!event.pointer) return;
-    // const x = event.pointer.worldX;
-    // const y = event.pointer.worldY;
-
-    // const position = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
-
-    // if (position.x === 0 && position.y === 0) return;
     spawn(15, 15);
   });
 
@@ -89,24 +83,24 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
 
         const playerObj = objectPool.get(playerEntity, "Sprite");
 
-        console.log(action);
         if (!hit) {
           // use then to wait for the animation to finish
           playerObj.setComponent({
             id: "animation",
             once: (sprite) => {
               sprite.setPosition(pixelPosition.x, pixelPosition.y);
+              playerLocation.next({
+                x: cachedPlayerTilePosition.x,
+                y: cachedPlayerTilePosition.y,
+              });
               sprite.play(action.animation);
               // sprite.setScale(3);
             },
           });
           camera.phaserCamera.pan(pixelPosition.x, pixelPosition.y, 200);
 
-          console.log("move");
-          console.log("cachedPlayerTilePosition", cachedPlayerTilePosition);
           move(cachedPlayerTilePosition.x, cachedPlayerTilePosition.y);
         } else {
-          console.log("hit", hit);
           playerObj.setComponent({
             id: "animation",
             once: (sprite) => {
@@ -127,8 +121,6 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
     }
   });
 
-  console.log("OBJECT POOL", { objectPool });
-
   defineEnterSystem(world, [Has(Position)], ({ entity }) => {
     const playerSprite = objectPool.get(entity, "Sprite");
 
@@ -136,6 +128,8 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
       const position = getComponentValueStrict(Position, entity);
       cachedPlayerTilePosition.x = position.x;
       cachedPlayerTilePosition.y = position.y;
+      playerLocation.next({ x: position.x, y: position.y });
+
       spawned = true;
     }
 
