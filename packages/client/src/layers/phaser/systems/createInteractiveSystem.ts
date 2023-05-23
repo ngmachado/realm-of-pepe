@@ -235,23 +235,30 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     const superToken = await framework.loadSuperToken("Blue");
 
-    const transactionResult = await superToken
-      .createFlow({
-        flowRate: "500000000",
-        receiver: nftBuilding.superTokenAddress,
-        overrides: {
-          gasPrice: "0",
-        },
-      })
-      .exec(signerToUse);
+    try {
+      const transactionResult = await superToken
+          .createFlow({
+            flowRate: "500000000",
+            receiver: nftBuilding.superTokenAddress,
+            overrides: {
+              gasPrice: "0",
+            },
+          })
+          .exec(signerToUse);
 
-    console.log("Waiting for transaction");
-    await waitForTransaction({
-      hash: transactionResult.hash as Address,
-    });
-    console.log("Transaction went through");
-    // This can be async
-    streamStore.loadRealTimeBalance("SPHR");
+      console.log("Waiting for transaction");
+      await waitForTransaction({
+        hash: transactionResult.hash as Address,
+      });
+      console.log("Transaction went through");
+    } catch (e: any) {
+      if (e.message.includes("0x801b6863")) {
+        console.log("player already has a stream to NFT");
+      }
+    } finally {
+      // This can be async
+      streamStore.loadRealTimeBalance("SPHR");
+    }
 
     phaserScene.add
       .sprite(46, 21, Assets.Crystals, 5)
@@ -265,25 +272,31 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     if (!storeData || !signerToUse || !playerEntityId) return;
 
     const superToken = await framework.loadSuperToken("SPHR");
+    try {
+      const transactionResult = await superToken
+          .createFlow({
+            flowRate: "5000000000000",
+            receiver: storeData.storeAddress,
+            overrides: {
+              gasPrice: "0",
+            },
+          })
+          .exec(signerToUse);
 
-    const transactionResult = await superToken
-      .createFlow({
-        flowRate: "5000000000000",
-        receiver: storeData.storeAddress,
-        overrides: {
-          gasPrice: "0",
-        },
-      })
-      .exec(signerToUse);
-
-    console.log("Waiting for transaction");
-    await waitForTransaction({
-      hash: transactionResult.hash as Address,
-    });
-    console.log("Transaction went through");
-    // Updating real time balances for the tokens
-    streamStore.loadRealTimeBalance("SPHR");
-    streamStore.loadRealTimeBalance("Blue");
+      console.log("Waiting for transaction");
+      await waitForTransaction({
+        hash: transactionResult.hash as Address,
+      });
+      console.log("Transaction went through");
+    } catch(e: any) {
+        if (e.message.includes("0x801b6863")) {
+            console.log("player already has a stream to store");
+        }
+    } finally {
+      // Updating real time balances for the tokens
+      streamStore.loadRealTimeBalance("SPHR");
+      streamStore.loadRealTimeBalance("Blue");
+    }
   }
 
   async function startMining() {
@@ -291,7 +304,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       await setSapphireStream();
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {
-        console.log("Player Already has a stream");
+        console.log("player already has a stream");
       }
     } finally {
       // TODO: This is a hacky way, how to get callback?
