@@ -147,7 +147,7 @@ contract EvoBuilding is SuperAppBaseCFA, ERC721 {
 		address sender = ownerOf(id);
 		int96 inFlowRate = inResourceToken.getFlowRate(sender, address(this));
 		if(inFlowRate > 0) {
-			return tokenURIs[tierLevel - 1];
+			return tokenURIs[tierLevel];
 		} else {
 			return tokenURIs[0];
 		}
