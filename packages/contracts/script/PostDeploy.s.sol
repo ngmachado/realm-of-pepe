@@ -110,10 +110,10 @@ contract PostDeploy is Script {
     int96 maxInFlowRate = 33333333333333332; // amount we can stream by second
 
     string[] memory tokenURIs = new string[](4);
-    tokenURIs[0] = "https://something.local/0";
-    tokenURIs[1] = "https://something.local/1";
-    tokenURIs[2] = "https://something.local/2";
-    tokenURIs[3] = "https://something.local/3";
+    tokenURIs[0] = "0.png";
+    tokenURIs[1] = "1.png";
+    tokenURIs[2] = "2.png";
+    tokenURIs[3] = "3.png";
 
     uint256[] memory tiers = new uint256[](4);
     tiers[0] = 1 ether;

@@ -75,7 +75,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     console.log("Blue balance", superTokenBalance);
     console.log("NFT Payload", {
-      flowRate: "6000",
+      flowRate: "500000000",
       receiver: nftBuilding.superTokenAddress,
       overrides: {
         gasPrice: "0",
