@@ -284,6 +284,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       const topics = log.topics;
       const id = topics[3];
       console.log("id", Number(id));
+      streamStore.nftEvo.next(Number(id));
+      streamStore.initNftTracking(nftBuilding.superTokenAddress);
       console.log("Transaction went through");
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {

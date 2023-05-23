@@ -23,6 +23,7 @@ export class StreamStore {
   framework: Framework;
   provider: Provider;
   realtimeBalanceObservable = new Subject<TokenRealtimeBalance>();
+  nftEvo = new Subject<number | null>();
 
   constructor(framework: Framework, wallet: string, provider: Provider) {
     this.framework = framework;
@@ -84,16 +85,18 @@ export class StreamStore {
   }
 
   async initNftTracking(address: string) {
-    console.log("Tracking NFT");
-    const contract = new Contract(address, EvoBuildingABI, this.provider);
+    try {
+      const contract = new Contract(address, EvoBuildingABI, this.provider);
 
-    const result = await contract.callStatic.balanceOf(this.wallet);
-    console.log("NFT RESULT", { result });
-    if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
-      const tokenURI = await contract.callStatic.tokenURI(1);
-      console.log("NFT URI", { tokenURI });
-    } else {
-      console.log("NO NFT");
+      const result = await contract.callStatic.balanceOf(this.wallet);
+
+      if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
+        const tokenURI = await contract.callStatic.tokenURI(1);
+        console.log("NFT URI", { tokenURI });
+        setTimeout(() => this.initNftTracking(address));
+      }
+    } catch (e: any) {
+      console.log("No NFT found", e);
     }
   }
 }
