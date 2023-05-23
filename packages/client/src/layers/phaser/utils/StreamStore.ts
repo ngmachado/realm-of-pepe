@@ -96,7 +96,7 @@ export class StreamStore {
   // }
 
   async initNftTracking(address: string) {
-    setInterval(() => this.initNftTracking(address), 2000);
+    setInterval(() => this.trackNFT(address), 2000);
   }
 
   async trackNFT(address: string) {
