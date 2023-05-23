@@ -110,16 +110,18 @@ contract PostDeploy is Script {
     int96 maxInFlowRate = 33333333333333332; // amount we can stream by second
 
     string[] memory tokenURIs = new string[](4);
-    tokenURIs[0] = "0.png";
-    tokenURIs[1] = "1.png";
-    tokenURIs[2] = "2.png";
-    tokenURIs[3] = "3.png";
+    tokenURIs[0] = "0";
+    tokenURIs[1] = "1";
+    tokenURIs[2] = "2";
+    tokenURIs[3] = "3";
+    tokenURIs[4] = "4";
 
     uint256[] memory tiers = new uint256[](4);
-    tiers[0] = 1 ether;
-    tiers[1] = 2 ether;
-    tiers[2] = 3 ether;
-    tiers[3] = 4 ether;
+    tiers[0] = 333333333333333300;
+    tiers[1] = 1000000000000000000;
+    tiers[2] = 2000000000000000000;
+    tiers[3] = 2666666666666666500;
+    tiers[3] = 4000000000000000000;
     EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(bluePotionAddress), maxInFlowRate, tokenURIs, tiers);
 
     console.log("EvoPepeArmy", address(building));
