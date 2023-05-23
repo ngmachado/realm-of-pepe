@@ -24,7 +24,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     superfluid,
     world,
     scenes: {
-      Main: { objectPool, phaserScene },
+      Main: { objectPool, phaserScene, camera },
     },
     networkLayer: {
       playerEntityId,
@@ -37,13 +37,35 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
-  const storeDialog = addDialog("store", Assets.Store, 24, 8, startExchange);
-  const mineDialog = addDialog("mine", Assets.Mine, 26, 30, startMining);
-  const nftDialog = addDialog("nft", Assets.NFT, 44, 13, mintNFT);
+  const backdrop = phaserScene.add
+    .rectangle(
+      0,
+      0,
+      phaserScene.cameras.main.width,
+      phaserScene.cameras.main.height,
+      0,
+      0.5
+    )
+    .setScrollFactor(0)
+    .setDepth(19)
+    .setOrigin(0, 0);
+
+  const introDialog = addDialog(Assets.Intro, () => {
+    introDialog.setVisible(false);
+    backdrop.setVisible(false);
+  })
+    .setVisible(true)
+    .setScrollFactor(0);
+
+  const bookDialog = addDialog(Assets.Book, () => {
+    bookDialog.setVisible(false);
+  }).setScrollFactor(0);
+
+  const storeDialog = addTooltip(Assets.Store, 24, 8, startExchange);
+  const mineDialog = addTooltip(Assets.Mine, 26, 30, startMining);
+  const nftDialog = addTooltip(Assets.NFT, 44, 13, mintNFT);
 
   playerLocation.subscribe((newLocation) => {
-    console.log("Interact?", newLocation.x, newLocation.y);
-
     const action = getInteractiveTile(newLocation.x, newLocation.y);
 
     switch (action?.event) {
@@ -63,8 +85,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     }
   });
 
-  function addDialog(
-    name: string,
+  function addTooltip(
     image: string,
     x: number,
     y: number,
@@ -77,9 +98,21 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     );
     return phaserScene.add
       .image(pixelCoordinates.x, pixelCoordinates.y, image)
-      .setName(name)
       .setOrigin(0, 0)
-      .setDepth(17)
+      .setDepth(15)
+      .setInteractive()
+      .setVisible(false)
+      .on("pointerdown", onClick);
+  }
+
+  function addDialog(image: string, onClick: () => void) {
+    return phaserScene.add
+      .image(
+        phaserScene.cameras.main.width / 2,
+        phaserScene.cameras.main.height / 2,
+        image
+      )
+      .setDepth(20)
       .setInteractive()
       .setVisible(false)
       .on("pointerdown", onClick);

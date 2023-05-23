@@ -31,11 +31,6 @@ export const createUISystem = (layer: PhaserLayer) => {
   let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
   let blueRTB = streamStore.realtimeBalances.get("Blue");
 
-  console.log("Loaded real time balances in UI", {
-    sapphireRTB,
-    blueRTB,
-  });
-
   streamStore.realtimeBalanceObservable.subscribe((realTimeBalance) => {
     const { token, ...rtb } = realTimeBalance;
 
@@ -51,13 +46,6 @@ export const createUISystem = (layer: PhaserLayer) => {
 
   const token1 = addText("0", 50, 10);
   const token2 = addText("0", 50, 60);
-  const token3 = addText("This is a test", 50, 110);
-  const token4 = addText("This is a test", 50, 160);
-
-  const icon1 = addAssetIcon(1, 10, 10);
-  const icon2 = addAssetIcon(2, 10, 60);
-  const icon3 = addAssetIcon(3, 10, 110);
-  const icon4 = addAssetIcon(4, 10, 160);
 
   setInterval(() => {
     if (sapphireRTB) {

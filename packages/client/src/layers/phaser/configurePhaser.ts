@@ -18,6 +18,11 @@ import NFTDisabledSprite from "../../../public/assets/dialogs/nftdisabled.png";
 import StoreSprite from "../../../public/assets/dialogs/store.png";
 import StoreDisabledSprite from "../../../public/assets/dialogs/storedisabled.png";
 
+import BookSprite from "../../../public/assets/dialogs/book.png";
+import IntroSprite from "../../../public/assets/dialogs/intro.png";
+
+import InventoryBtnSprite from "../../../public/assets/buttons/inventory.png";
+
 import { TileAnimations } from "../../artTypes/world";
 import {
   Animations,
@@ -120,6 +125,21 @@ export const phaserConfig = {
           type: AssetType.Image,
           key: Assets.StoreDisabled,
           path: StoreDisabledSprite,
+        },
+        [Assets.Book]: {
+          type: AssetType.Image,
+          key: Assets.Book,
+          path: BookSprite,
+        },
+        [Assets.Intro]: {
+          type: AssetType.Image,
+          key: Assets.Intro,
+          path: IntroSprite,
+        },
+        [Assets.InventoryBtn]: {
+          type: AssetType.Image,
+          key: Assets.InventoryBtn,
+          path: InventoryBtnSprite,
         },
       },
       maps: {

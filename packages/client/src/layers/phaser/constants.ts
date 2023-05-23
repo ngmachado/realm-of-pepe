@@ -40,6 +40,11 @@ export enum Assets {
   NFTDisabled = "NFTDisabled",
   Store = "Store",
   StoreDisabled = "StoreDisabled",
+
+  Book = "Book",
+  Intro = "Intro",
+
+  InventoryBtn = "InventoryBtn",
 }
 
 export const TILE_HEIGHT = 48;
