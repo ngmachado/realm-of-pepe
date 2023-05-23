@@ -109,19 +109,19 @@ contract PostDeploy is Script {
     address bluePotionAddress = SFSuperTokenTable.get(world, 2); //BluePotion
     int96 maxInFlowRate = 33333333333333332; // amount we can stream by second
 
-    string[] memory tokenURIs = new string[](4);
+    string[] memory tokenURIs = new string[](5);
     tokenURIs[0] = "0";
     tokenURIs[1] = "1";
     tokenURIs[2] = "2";
     tokenURIs[3] = "3";
     tokenURIs[4] = "4";
 
-    uint256[] memory tiers = new uint256[](4);
+    uint256[] memory tiers = new uint256[](5);
     tiers[0] = 333333333333333300;
     tiers[1] = 1000000000000000000;
     tiers[2] = 2000000000000000000;
     tiers[3] = 2666666666666666500;
-    tiers[3] = 4000000000000000000;
+    tiers[4] = 4000000000000000000;
     EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(bluePotionAddress), maxInFlowRate, tokenURIs, tiers);
 
     console.log("EvoPepeArmy", address(building));
