@@ -213,12 +213,21 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   }
 
   async function startMining() {
-    await setSapphireStream();
-    // TODO: This is a hacky way, how to get callback?
-    console.log("Fetching SPHR");
-    setTimeout(() => {
-      superfluid.streamStore.loadRealTimeBalance("SPHR");
-    }, 2000);
+    try {
+      await setSapphireStream();
+    } catch (e) {
+      if(e.message.includes("0x801b6863")) {
+        console.log("Player Already has a stream");
+      }
+    } finally {
+      // TODO: This is a hacky way, how to get callback?
+      console.log("Fetching SPHR");
+      setTimeout(() => {
+        superfluid.streamStore.loadRealTimeBalance("SPHR");
+      }, 2000);
+    }
+
+
   }
 
   async function enterCave() {
