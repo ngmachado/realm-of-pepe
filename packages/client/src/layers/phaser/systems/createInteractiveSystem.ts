@@ -53,22 +53,23 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     }
   });
 
-  const token1 = addTokenText("0", 490, -183);
-  const token2 = addTokenText("0", 490, -132);
-  const token3 = addTokenText("0", 490, -75);
+  const token1 = addAssetText("0", 490, -183);
+  const token2 = addAssetText("0", 490, -132);
+  const token3 = addAssetText("0", 490, -75);
+  const potion1 = addAssetText("0", 490, 90);
+  const potion2 = addAssetText("0", 490, 145);
+  const potion3 = addAssetText("0", 490, 200);
 
   setInterval(() => {
     if (sapphireRTB) {
       const newBalance = calculateRealtimeBalance(sapphireRTB);
       const formattedBalance = new Decimal(formatEther(newBalance));
-      // decimal.toDP()
-      // utils.formatFixed(formatEther(newBalance.toString()), 10)
-      token1.setText(formattedBalance.toDP(5).toString());
+      token1.setText(formattedBalance.toDP(6).toString());
     }
 
     if (blueRTB) {
       const newBalance = calculateRealtimeBalance(blueRTB);
-      token2.setText(formatEther(newBalance.toString()));
+      potion1.setText(formatEther(newBalance.toString()));
     }
   }, 500);
 
@@ -81,7 +82,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     );
   }
 
-  function addTokenText(label: string, x: number, y: number) {
+  function addAssetText(label: string, x: number, y: number) {
     return phaserScene.add
       .text(
         phaserScene.cameras.main.width / 2 + x,
@@ -173,12 +174,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       token1.setVisible(true);
       token2.setVisible(true);
       token3.setVisible(true);
+      potion1.setVisible(true);
+      potion2.setVisible(true);
+      potion3.setVisible(true);
     } else {
       backdrop.setVisible(false);
       bookDialog.setVisible(false);
       token1.setVisible(false);
       token2.setVisible(false);
       token3.setVisible(false);
+      potion1.setVisible(false);
+      potion2.setVisible(false);
+      potion3.setVisible(false);
     }
   }
   function addTooltip(
@@ -282,8 +289,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   async function startMining() {
     try {
       await setSapphireStream();
-    } catch (e) {
-      if(e.message.includes("0x801b6863")) {
+    } catch (e: any) {
+      if (e.message.includes("0x801b6863")) {
         console.log("Player Already has a stream");
       }
     } finally {
@@ -293,8 +300,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         streamStore.loadRealTimeBalance("SPHR");
       }, 2000);
     }
-
-
   }
 
   async function enterCave() {
