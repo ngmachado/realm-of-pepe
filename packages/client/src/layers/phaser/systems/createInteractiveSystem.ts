@@ -76,12 +76,36 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setVisible(false)
     .setScrollFactor(0);
 
+  streamStore.nftEvo.subscribe((evo) => {
+    console.log({ evo });
+    if (evo !== null) {
+      nftImage.setFrame(evo);
+    }
+  });
+
   const token1 = addAssetText("0", 490, -183);
   const token2 = addAssetText("0", 490, -132);
   const token3 = addAssetText("0", 490, -75);
+
   const potion1 = addAssetText("0", 490, 90);
   const potion2 = addAssetText("0", 490, 145);
   const potion3 = addAssetText("0", 490, 200);
+
+  const soldierToken = phaserScene.add
+    .text(
+      phaserScene.cameras.main.width / 2 - 280,
+      phaserScene.cameras.main.height / 2 + 180,
+      "0",
+      {
+        color: "#734C44",
+        fontSize: "40px",
+        fontFamily: "VT323",
+      }
+    )
+    .setOrigin(0.5, 0.5)
+    .setDepth(21)
+    .setVisible(false)
+    .setScrollFactor(0);
 
   setInterval(() => {
     if (sapphireRTB) {
@@ -92,7 +116,13 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     if (blueRTB) {
       const newBalance = calculateRealtimeBalance(blueRTB);
-      potion1.setText(formatEther(newBalance.toString()));
+      const formattedBalance = new Decimal(formatEther(newBalance));
+      potion1.setText(formattedBalance.toDP(6).toString());
+    }
+
+    if (streamStore.nftEvoStream) {
+      const newBalance = calculateRealtimeBalance(streamStore.nftEvoStream);
+      soldierToken.setText(formatEther(newBalance.toString()));
     }
   }, 500);
 
@@ -201,6 +231,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion2.setVisible(true);
       potion3.setVisible(true);
       nftImage.setVisible(true);
+      soldierToken.setVisible(true);
     } else {
       backdrop.setVisible(false);
       bookDialog.setVisible(false);
@@ -211,8 +242,10 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion2.setVisible(false);
       potion3.setVisible(false);
       nftImage.setVisible(false);
+      soldierToken.setVisible(false);
     }
   }
+
   function addTooltip(
     image: string,
     x: number,
@@ -285,7 +318,13 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       const id = topics[3];
       console.log("id", Number(id));
       streamStore.nftEvo.next(Number(id));
-      streamStore.initNftTracking(nftBuilding.superTokenAddress);
+
+      // streamStore.initNftTracking(nftBuilding.superTokenAddress);
+      streamStore.nftEvoStream = {
+        flowRate: "500000000",
+        balance: "0",
+        timestamp: getUnixTime(new Date()),
+      };
       console.log("Transaction went through");
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {
@@ -301,6 +340,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       .setOrigin(0, 0)
       .setDepth(1);
   }
+
+  // function startNFTEvo(currentEvo: number) {
+  //   const newEvo = currentEvo + 1;
+
+  //   streamStore.nftEvo.next(newEvo);
+
+  //   if (newEvo <= 4) {
+  //     setTimeout(() => {
+  //       startNFTEvo(newEvo + 1);
+  //     }, 10000);
+  //   }
+  // }
 
   async function startExchange() {
     const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);

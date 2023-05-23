@@ -24,6 +24,7 @@ export class StreamStore {
   provider: Provider;
   realtimeBalanceObservable = new Subject<TokenRealtimeBalance>();
   nftEvo = new Subject<number | null>();
+  nftEvoStream: RealTimeBalance | null = null;
 
   constructor(framework: Framework, wallet: string, provider: Provider) {
     this.framework = framework;
@@ -84,6 +85,15 @@ export class StreamStore {
     return superTokenBalance;
   }
 
+  // async loadFlow(token: string, account: string) {
+  //   const superToken = await this.framework.loadSuperToken(token);
+  //   const activeFlow = await superToken.getFlow({
+  //     receiver: account,
+  //     sender: this.wallet,
+  //     providerOrSigner: this.provider,
+  //   });
+  // }
+
   async initNftTracking(address: string) {
     try {
       const contract = new Contract(address, EvoBuildingABI, this.provider);
@@ -92,8 +102,14 @@ export class StreamStore {
 
       if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
         const tokenURI = await contract.callStatic.tokenURI(1);
-        console.log("NFT URI", { tokenURI });
-        setTimeout(() => this.initNftTracking(address));
+        console.log("NFT FOUND", tokenURI);
+        this.nftEvo.next(Number(tokenURI));
+        this.nftEvoStream = {
+          flowRate: "500000000",
+          balance: "0",
+          timestamp: getUnixTime(new Date()),
+        };
+        setTimeout(() => this.initNftTracking(address), 2000);
       }
     } catch (e: any) {
       console.log("No NFT found", e);
