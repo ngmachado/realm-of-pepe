@@ -5,7 +5,7 @@ import {
   defineEnterSystem,
   getComponentValueStrict,
 } from "@latticexyz/recs";
-import { waitForTransaction } from "@wagmi/core";
+import {waitForTransaction, WaitForTransactionResult} from "@wagmi/core";
 import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
@@ -247,10 +247,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
           .exec(signerToUse);
 
       console.log("Waiting for transaction");
-      await waitForTransaction({
+      const rs = await waitForTransaction({
         hash: transactionResult.hash as Address,
       });
+
+      // get token id from events:
+      const contractLogs = rs.logs.filter((log) => log.address === nftBuilding.superTokenAddress);
+      const log = contractLogs[0];
+      const topics = log.topics;
+      const id = topics[3];
+      console.log("id", Number(id));
       console.log("Transaction went through");
+
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {
         console.log("player already has a stream to NFT");
