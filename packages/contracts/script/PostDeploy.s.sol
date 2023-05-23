@@ -117,11 +117,11 @@ contract PostDeploy is Script {
     tokenURIs[4] = "4";
 
     uint256[] memory tiers = new uint256[](5);
-    tiers[0] = 333333333333333300;
-    tiers[1] = 1000000000000000000;
-    tiers[2] = 2000000000000000000;
-    tiers[3] = 2666666666666666500;
-    tiers[4] = 4000000000000000000;
+    tiers[0] = 500000000 * 10;
+    tiers[1] = 500000000 * 20;
+    tiers[2] = 500000000 * 30;
+    tiers[3] = 500000000 * 40;
+    tiers[4] = 500000000 * 50;
     EvoBuilding building = new EvoBuilding(name, symbol, ISuperToken(bluePotionAddress), maxInFlowRate, tokenURIs, tiers);
 
     console.log("EvoPepeArmy", address(building));
