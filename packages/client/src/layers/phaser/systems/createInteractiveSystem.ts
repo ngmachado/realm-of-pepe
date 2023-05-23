@@ -1,27 +1,28 @@
-import {
-  pixelCoordToTileCoord,
-  tileCoordToPixelCoord,
-} from "@latticexyz/phaserx";
+import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
 import {
   Entity,
   Has,
   defineEnterSystem,
   getComponentValueStrict,
 } from "@latticexyz/recs";
+import { waitForTransaction } from "@wagmi/core";
+import { getUnixTime } from "date-fns";
+import { BigNumber } from "ethers";
+import { formatEther } from "ethers/lib/utils";
+import { Address } from "viem";
 import { Assets, TILE_HEIGHT, TILE_WIDTH } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import {
   InteractiveEvent,
   getInteractiveTile,
-  getTilesToInteractWith,
 } from "../utils/InteractriveObjectUtils";
-import { waitForTransaction } from "@wagmi/core";
-import { Address } from "viem";
+import { RealTimeBalance } from "../utils/StreamStore";
+import Decimal from "decimal.js";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
     playerLocation,
-    superfluid,
+    superfluid: { framework, streamStore },
     world,
     scenes: {
       Main: { objectPool, phaserScene, camera },
@@ -36,6 +37,67 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       playerEntity,
     },
   } = layer;
+
+  let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
+  let blueRTB = streamStore.realtimeBalances.get("Blue");
+
+  streamStore.realtimeBalanceObservable.subscribe((realTimeBalance) => {
+    const { token, ...rtb } = realTimeBalance;
+
+    switch (token) {
+      case "SPHR":
+        sapphireRTB = rtb;
+        break;
+      case "Blue":
+        blueRTB = rtb;
+    }
+  });
+
+  const token1 = addTokenText("0", 490, -183);
+  const token2 = addTokenText("0", 490, -132);
+  const token3 = addTokenText("0", 490, -75);
+
+  setInterval(() => {
+    if (sapphireRTB) {
+      const newBalance = calculateRealtimeBalance(sapphireRTB);
+      const formattedBalance = new Decimal(formatEther(newBalance));
+      // decimal.toDP()
+      // utils.formatFixed(formatEther(newBalance.toString()), 10)
+      token1.setText(formattedBalance.toDP(5).toString());
+    }
+
+    if (blueRTB) {
+      const newBalance = calculateRealtimeBalance(blueRTB);
+      token2.setText(formatEther(newBalance.toString()));
+    }
+  }, 500);
+
+  function calculateRealtimeBalance(rtb: RealTimeBalance): BigNumber {
+    const { balance, flowRate, timestamp } = rtb;
+    const unixNow = getUnixTime(new Date());
+
+    return BigNumber.from(balance).add(
+      BigNumber.from(unixNow - timestamp).mul(BigNumber.from(flowRate))
+    );
+  }
+
+  function addTokenText(label: string, x: number, y: number) {
+    return phaserScene.add
+      .text(
+        phaserScene.cameras.main.width / 2 + x,
+        phaserScene.cameras.main.height / 2 + y,
+        label,
+        {
+          color: "#734C44",
+          fontSize: "32px",
+          fontFamily: "VT323",
+        }
+      )
+      .setOrigin(1, 0.5)
+      .setDepth(21)
+      .setVisible(false)
+      .setScrollFactor(0);
+  }
 
   const inventoryButton = phaserScene.add
     .image(phaserScene.cameras.main.width - 178, 0, Assets.InventoryBtn)
@@ -104,14 +166,19 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   function toggleInventory() {
     showInventory = !showInventory;
-    console.log("TOGGLE INV");
 
     if (showInventory) {
       backdrop.setVisible(true);
       bookDialog.setVisible(true);
+      token1.setVisible(true);
+      token2.setVisible(true);
+      token3.setVisible(true);
     } else {
       backdrop.setVisible(false);
       bookDialog.setVisible(false);
+      token1.setVisible(false);
+      token2.setVisible(false);
+      token3.setVisible(false);
     }
   }
   function addTooltip(
@@ -159,7 +226,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const myAddress = await signerToUse.getAddress();
     if (!myAddress) return;
 
-    const superToken = await superfluid.framework.loadSuperToken("Blue");
+    const superToken = await framework.loadSuperToken("Blue");
 
     const transactionResult = await superToken
       .createFlow({
@@ -177,7 +244,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     });
     console.log("Transaction went through");
     // This can be async
-    superfluid.streamStore.loadRealTimeBalance("SPHR");
+    streamStore.loadRealTimeBalance("SPHR");
 
     phaserScene.add
       .sprite(46, 21, Assets.Crystals, 5)
@@ -190,7 +257,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const signerToUse = signer.get();
     if (!storeData || !signerToUse || !playerEntityId) return;
 
-    const superToken = await superfluid.framework.loadSuperToken("SPHR");
+    const superToken = await framework.loadSuperToken("SPHR");
 
     const transactionResult = await superToken
       .createFlow({
@@ -208,8 +275,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     });
     console.log("Transaction went through");
     // Updating real time balances for the tokens
-    superfluid.streamStore.loadRealTimeBalance("SPHR");
-    superfluid.streamStore.loadRealTimeBalance("Blue");
+    streamStore.loadRealTimeBalance("SPHR");
+    streamStore.loadRealTimeBalance("Blue");
   }
 
   async function startMining() {

@@ -28,6 +28,7 @@
     "@wagmi/core": "^1.0.5",
     "contracts": "workspace:*",
     "date-fns": "^2.30.0",
+    "decimal.js": "^10.4.3",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
