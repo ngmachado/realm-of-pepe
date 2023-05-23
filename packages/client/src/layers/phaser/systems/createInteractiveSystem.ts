@@ -130,7 +130,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const myAddress = await signerToUse.getAddress();
     if (!myAddress) return;
 
-    const superToken = await superfluid.framework.loadSuperToken("SPHR");
+    const superToken = await superfluid.framework.loadSuperToken("Blue");
 
     const transactionResult = await superToken
       .createFlow({
