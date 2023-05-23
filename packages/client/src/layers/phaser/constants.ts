@@ -41,6 +41,9 @@ export enum Assets {
   Store = "Store",
   StoreDisabled = "StoreDisabled",
 
+  StoreEnter = "StoreEnter",
+  ForgeEnter = "ForgeEnter",
+
   Book = "Book",
   Intro = "Intro",
 
