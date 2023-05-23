@@ -4,6 +4,7 @@ import { PhaserLayer } from "../createPhaserLayer";
 export const createUISystem = (layer: PhaserLayer) => {
   const {
     superfluid,
+    game: { scale },
     scenes: {
       Main: { phaserScene },
     },
@@ -38,6 +39,13 @@ export const createUISystem = (layer: PhaserLayer) => {
       .setDepth(10)
       .setScrollFactor(0);
   }
+  console.log("Game viewport", scale.gameSize);
+
+  // const backdrop = phaserScene.add
+  //   .rectangle(0, 0, scale.gameSize.width, scale.gameSize.height, 0, 0.8)
+  //   .setDepth(9)
+  //   .setOrigin(0, 0)
+  //   .setScrollFactor(0);
 
   let amount = 0;
 

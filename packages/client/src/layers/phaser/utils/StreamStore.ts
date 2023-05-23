@@ -1,19 +1,40 @@
-// import { Framework } from "@superfluid-finance/sdk-core";
+import { Provider } from "@ethersproject/providers";
+import { Framework } from "@superfluid-finance/sdk-core";
+import { Signer } from "ethers";
 
-// class StreamStore {
-//     activeFlows = new Map()
-//     wallet:string;
-//     framework:Framework;
+const TOKENS_TO_LOAD = ["SPHR", "Blue"];
 
-//     constructor(framework:Framework, wallet:string) {
-//         this.framework = framework;
-//         this.wallet = wallet;
-//     }
+export class StreamStore {
+  activeFlows = new Map();
+  wallet: string;
+  framework: Framework;
+  provider: Provider;
 
-//     loadActiveFlow(token:string, receiver:string) {
+  constructor(framework: Framework, wallet: string, provider: Provider) {
+    this.framework = framework;
+    this.wallet = wallet;
+    this.provider = provider;
+  }
 
-//     }
+  async init() {
+    return Promise.all(
+      TOKENS_TO_LOAD.map((token) => {
+        return this.loadRealTimeBalance(token);
+      })
+    );
+  }
 
-// }
+  async loadRealTimeBalance(token: string) {
+    console.log("Loading token", token, this.framework);
+    const superToken = await this.framework.loadSuperToken(token);
 
-// export default StreamStore;
+    const realTimeBalance = await superToken.realtimeBalanceOf({
+      account: this.wallet,
+      providerOrSigner: this.provider,
+    });
+
+    console.log("Real time balance loaded", { token, realTimeBalance });
+
+    return realTimeBalance;
+  }
+}
