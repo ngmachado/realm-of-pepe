@@ -161,7 +161,7 @@ contract EvoBuilding is SuperAppBaseCFA, ERC721 {
 	function getTierLevel(uint256 id) public view returns (uint256) {
 		require(_exists(id), "EVO: tokenURI query for nonexistent token");
 		uint256 balance = _getBalance(id);
-		for (uint256 i = tiers.length; i > 0; i--) {
+		for (uint256 i = tiers.length-1; i > 0; i--) {
 			if (balance >= tiers[i]) {
 				return i;
 			}
