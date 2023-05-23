@@ -1,14 +1,16 @@
 import { Framework } from "@superfluid-finance/sdk-core";
-import { configureChains } from "@wagmi/core";
+import { configureChains, createConfig } from "@wagmi/core";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { ethers } from "ethers";
 import { foundry } from "viem/chains";
 import { NetworkLayer } from "./createNetworkLayer";
 import { StreamStore } from "../phaser/utils/StreamStore";
+import { Provider } from "@ethersproject/providers";
 
 export interface SuperfluidLayer {
   framework: Framework;
   streamStore: StreamStore;
+  provider: Provider;
 }
 
 export function createSuperfluidLayer(
@@ -36,6 +38,12 @@ export function createSuperfluidLayer(
   //   ]
   // );
 
+  // const wagmiConf = createConfig({
+  //   chains,
+  //   publicClient,
+  //   webSocketPublicClient,
+  // });
+
   return new Promise((resolve) => {
     SFContractTable.update$.subscribe(async ({ entity, value }) => {
       console.log("UPDATEEEEEEE", entity, value[0]?.contractAddress);
@@ -60,7 +68,7 @@ export function createSuperfluidLayer(
 
         await streamStore.init();
 
-        resolve({ framework, streamStore });
+        resolve({ framework, streamStore, provider });
       }
     });
   });

@@ -37,4 +37,18 @@ export class StreamStore {
 
     return realTimeBalance;
   }
+
+  async loadBalanceOf(token: string, account: string) {
+    console.log("Loading token", token, this.framework);
+    const superToken = await this.framework.loadSuperToken(token);
+
+    const superTokenBalance = await superToken.balanceOf({
+      account,
+      providerOrSigner: this.provider,
+    });
+
+    console.log("BalanceOf loaded", { superToken, superTokenBalance });
+
+    return superTokenBalance;
+  }
 }

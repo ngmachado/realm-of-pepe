@@ -5,7 +5,7 @@ import {
   defineEnterSystem,
   getComponentValueStrict,
 } from "@latticexyz/recs";
-import { TILE_HEIGHT, TILE_WIDTH } from "../constants";
+import { Assets, TILE_HEIGHT, TILE_WIDTH } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import {
   InteractiveEvent,
@@ -66,14 +66,14 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const myAddress = await signerToUse.getAddress();
     if (!myAddress) return;
 
-    const superToken = await superfluid.framework.loadSuperToken("Blue");
+    const superToken = await superfluid.framework.loadSuperToken("SPHR");
 
     const superTokenBalance = await superToken.balanceOf({
       account: myAddress,
       providerOrSigner: signerToUse,
     });
 
-    console.log("Blue balance", superTokenBalance);
+    console.log("SPHR balance", superTokenBalance);
     console.log("NFT Payload", {
       flowRate: "500000000",
       receiver: nftBuilding.superTokenAddress,
@@ -81,15 +81,21 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         gasPrice: "0",
       },
     });
+
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "500000000",
+        flowRate: "100",
         receiver: nftBuilding.superTokenAddress,
         overrides: {
           gasPrice: "0",
         },
       })
       .exec(signerToUse);
+
+    phaserScene.add
+      .sprite(46, 21, Assets.Crystals, 5)
+      .setOrigin(0, 0)
+      .setDepth(1);
   }
 
   async function startExchange() {
@@ -107,7 +113,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     console.log("Sapphire balance", { superTokenBalance });
     const transactionResult = await superToken
       .createFlow({
-        flowRate: "5000000000000",
+        flowRate: "100000",
         receiver: storeData.storeAddress,
         overrides: {
           gasPrice: "0",

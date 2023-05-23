@@ -1,7 +1,11 @@
+import { Entity, getComponentValueStrict } from "@latticexyz/recs";
 import { Tileset } from "../../../artTypes/world";
 import { Assets, Sprites, WORLD_HEIGHT, WORLD_WIDTH } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import { createNoise2D } from "simplex-noise";
+import { readContract } from "@wagmi/core";
+import EvoBuildingABI from "../utils/EvoBuildingABI";
+import { BigNumber, Contract } from "ethers";
 
 const LAYER1 = [
   [
@@ -138,13 +142,20 @@ const LAYER1 = [
   ],
 ];
 
+type Address = `0x${string}`;
+
 const LAYER_WIDTH = 32;
 const LAYER_HEIGHT = 33;
 
 export function createMapSystem(layer: PhaserLayer) {
   const {
+    superfluid: { streamStore, provider },
     scenes: {
       Main: { phaserScene },
+    },
+    networkLayer: {
+      playerEntityId,
+      components: { SFSuperTokenTable },
     },
   } = layer;
 
@@ -165,4 +176,36 @@ export function createMapSystem(layer: PhaserLayer) {
     .setSize(WORLD_WIDTH, WORLD_HEIGHT)
     .setScale(3)
     .setOrigin(0, 0);
+
+  const nftBuilding = getComponentValueStrict(
+    SFSuperTokenTable,
+    "0x03" as Entity
+  );
+
+  // console.log("NFT BUILDING ADDRESS", nftBuilding);
+
+  // streamStore.loadBalanceOf("SPHR", nftBuilding.superTokenAddress);
+  console.log("Player entity exists", playerEntityId);
+  if (playerEntityId) {
+    readEvoContract();
+  }
+
+  async function readEvoContract() {
+    const contract = new Contract(
+      nftBuilding.superTokenAddress,
+      EvoBuildingABI,
+      provider
+    );
+
+    const result = await contract.callStatic.balanceOf(playerEntityId);
+    console.log("NFT RESULT", result);
+    if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
+      console.log("Render NFT");
+
+      const tokenURI = await contract.callStatic.tokenURI(1);
+      console.log({ tokenURI });
+    } else {
+      console.log("NO NFT");
+    }
+  }
 }
