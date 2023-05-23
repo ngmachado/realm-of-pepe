@@ -16,6 +16,7 @@ import { SUMMER_COLLISION_MAP, isCollision } from "../utils/CollisionUtils";
 export const createPlayerSystem = (layer: PhaserLayer) => {
   let cachedPlayerTilePosition = { x: 0, y: 0 };
   let spawned = false;
+  let firstRun = true;
 
   const {
     playerLocation,
@@ -148,10 +149,11 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   });
 
   defineSystem(world, [Has(Position)], ({ entity }) => {
-    if (playerEntity === entity) {
+    const isPlayer = playerEntity === entity;
+    if (isPlayer && !firstRun) {
       return;
     }
-
+    firstRun = false;
     const position = getComponentValueStrict(Position, entity);
     const pixelPosition = tileCoordToPixelCoord(
       position,
@@ -159,8 +161,10 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
       TILE_HEIGHT
     );
 
+    if(isPlayer) {
+        camera.phaserCamera.pan(pixelPosition.x, pixelPosition.y, 0);
+    }
     const playerSprite = objectPool.get(entity, "Sprite");
-
     playerSprite.setComponent({
       id: "position",
       once: (sprite) => {
