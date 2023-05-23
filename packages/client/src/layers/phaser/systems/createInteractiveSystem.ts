@@ -39,6 +39,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
+  let showInventory = false;
+
   const nftBuilding = getComponentValueStrict(
     SFSuperTokenTable,
     "0x03" as Entity
@@ -76,10 +78,14 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setVisible(false)
     .setScrollFactor(0);
 
+  let evoInit = false;
+
   streamStore.nftEvo.subscribe((evo) => {
-    console.log({ evo });
     if (evo !== null) {
-      nftImage.setVisible(true).setFrame(evo);
+      evoInit = true;
+      nftImage.setFrame(evo).setVisible(showInventory);
+    } else {
+      nftImage.setVisible(false);
     }
   });
 
@@ -216,11 +222,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     }
   });
 
-  let showInventory = false;
-
   function toggleInventory() {
     showInventory = !showInventory;
-    console.log("EVO", streamStore.nftEvo);
     if (showInventory) {
       backdrop.setVisible(true);
       bookDialog.setVisible(true);
@@ -230,7 +233,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion1.setVisible(true);
       potion2.setVisible(true);
       potion3.setVisible(true);
-      nftImage.setVisible(streamStore.nftEvo !== null);
+      nftImage.setVisible(evoInit);
       soldierToken.setVisible(true);
     } else {
       backdrop.setVisible(false);

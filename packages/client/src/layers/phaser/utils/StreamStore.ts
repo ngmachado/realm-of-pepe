@@ -117,7 +117,10 @@ export class StreamStore {
             timestamp: getUnixTime(new Date()),
           };
         }
+        return;
       }
+
+      this.nftEvo.next(null);
     } catch (e: any) {
       console.log("No NFT found", e);
     }
