@@ -24,6 +24,7 @@ import BookSprite from "../../../public/assets/dialogs/book.png";
 import IntroSprite from "../../../public/assets/dialogs/intro.png";
 
 import InventoryBtnSprite from "../../../public/assets/buttons/inventory.png";
+import SoldierSprite from "../../../public/assets/characters/soldier.png";
 
 import { TileAnimations } from "../../artTypes/world";
 import {
@@ -153,6 +154,16 @@ export const phaserConfig = {
           key: Assets.InventoryBtn,
           path: InventoryBtnSprite,
         },
+        [Assets.Soldier]: {
+          type: AssetType.SpriteSheet,
+          key: Assets.Soldier,
+          path: SoldierSprite,
+          options: {
+            frameHeight: 32,
+            frameWidth: 16,
+            scale: 3,
+          },
+        },
       },
       maps: {
         [Maps.Main]: mainMap,
@@ -168,6 +179,10 @@ export const phaserConfig = {
         },
         [Sprites.Background]: {
           assetKey: Assets.Background,
+          startFrame: 0,
+        },
+        [Sprites.Soldier]: {
+          assetKey: Assets.Soldier,
           startFrame: 0,
         },
       },

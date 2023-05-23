@@ -5,9 +5,9 @@ import {
   defineEnterSystem,
   getComponentValueStrict,
 } from "@latticexyz/recs";
-import {waitForTransaction, WaitForTransactionResult} from "@wagmi/core";
+import { waitForTransaction, WaitForTransactionResult } from "@wagmi/core";
 import { getUnixTime } from "date-fns";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { Address } from "viem";
 import { Assets, TILE_HEIGHT, TILE_WIDTH } from "../constants";
@@ -18,11 +18,12 @@ import {
 } from "../utils/InteractriveObjectUtils";
 import { RealTimeBalance } from "../utils/StreamStore";
 import Decimal from "decimal.js";
+import EvoBuildingABI from "../utils/EvoBuildingABI";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
     playerLocation,
-    superfluid: { framework, streamStore },
+    superfluid: { framework, streamStore, provider },
     world,
     scenes: {
       Main: { objectPool, phaserScene, camera },
@@ -38,6 +39,15 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
+  const nftBuilding = getComponentValueStrict(
+    SFSuperTokenTable,
+    "0x03" as Entity
+  );
+
+  if (playerEntityId) {
+    streamStore.initNftTracking(nftBuilding.superTokenAddress);
+  }
+
   let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
   let blueRTB = streamStore.realtimeBalances.get("Blue");
 
@@ -52,6 +62,19 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         blueRTB = rtb;
     }
   });
+
+  const nftImage = phaserScene.add
+    .image(
+      phaserScene.cameras.main.width / 2 - 300,
+      phaserScene.cameras.main.height / 2 + 40,
+      Assets.Soldier,
+      0
+    )
+    .setScale(2)
+    .setOrigin(0, 0)
+    .setDepth(21)
+    .setVisible(false)
+    .setScrollFactor(0);
 
   const token1 = addAssetText("0", 490, -183);
   const token2 = addAssetText("0", 490, -132);
@@ -177,6 +200,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion1.setVisible(true);
       potion2.setVisible(true);
       potion3.setVisible(true);
+      nftImage.setVisible(true);
     } else {
       backdrop.setVisible(false);
       bookDialog.setVisible(false);
@@ -186,6 +210,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion1.setVisible(false);
       potion2.setVisible(false);
       potion3.setVisible(false);
+      nftImage.setVisible(false);
     }
   }
   function addTooltip(
@@ -237,14 +262,14 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     try {
       const transactionResult = await superToken
-          .createFlow({
-            flowRate: "500000000",
-            receiver: nftBuilding.superTokenAddress,
-            overrides: {
-              gasPrice: "0",
-            },
-          })
-          .exec(signerToUse);
+        .createFlow({
+          flowRate: "500000000",
+          receiver: nftBuilding.superTokenAddress,
+          overrides: {
+            gasPrice: "0",
+          },
+        })
+        .exec(signerToUse);
 
       console.log("Waiting for transaction");
       const rs = await waitForTransaction({
@@ -252,13 +277,14 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       });
 
       // get token id from events:
-      const contractLogs = rs.logs.filter((log) => log.address === nftBuilding.superTokenAddress);
+      const contractLogs = rs.logs.filter(
+        (log) => log.address === nftBuilding.superTokenAddress
+      );
       const log = contractLogs[0];
       const topics = log.topics;
       const id = topics[3];
       console.log("id", Number(id));
       console.log("Transaction went through");
-
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {
         console.log("player already has a stream to NFT");
@@ -282,24 +308,24 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const superToken = await framework.loadSuperToken("SPHR");
     try {
       const transactionResult = await superToken
-          .createFlow({
-            flowRate: "5000000000000",
-            receiver: storeData.storeAddress,
-            overrides: {
-              gasPrice: "0",
-            },
-          })
-          .exec(signerToUse);
+        .createFlow({
+          flowRate: "5000000000000",
+          receiver: storeData.storeAddress,
+          overrides: {
+            gasPrice: "0",
+          },
+        })
+        .exec(signerToUse);
 
       console.log("Waiting for transaction");
       await waitForTransaction({
         hash: transactionResult.hash as Address,
       });
       console.log("Transaction went through");
-    } catch(e: any) {
-        if (e.message.includes("0x801b6863")) {
-            console.log("player already has a stream to store");
-        }
+    } catch (e: any) {
+      if (e.message.includes("0x801b6863")) {
+        console.log("player already has a stream to store");
+      }
     } finally {
       // Updating real time balances for the tokens
       streamStore.loadRealTimeBalance("SPHR");
@@ -326,24 +352,4 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   async function enterCave() {
     console.log("WHOOOOOO YOUR ARE AMAZING!!!");
   }
-
-  defineEnterSystem(world, [Has(Position)], ({ entity }) => {
-    if (playerEntity === entity) {
-      const playerSprite = objectPool.get(entity, "Sprite");
-      const userSprite = phaserScene.children.getByName(
-        `player-${playerSprite.id}`
-      );
-      console.log("Found user sprite, adding callback");
-      if (userSprite) {
-        console.log("Adding callback");
-        userSprite.on(
-          "changedata",
-          (...args: any) => {
-            console.log("HANDLING CALLBACK", args);
-          },
-          phaserScene
-        );
-      }
-    }
-  });
 };

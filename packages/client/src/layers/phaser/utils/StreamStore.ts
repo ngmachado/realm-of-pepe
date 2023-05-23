@@ -2,6 +2,8 @@ import { Provider } from "@ethersproject/providers";
 import { Framework } from "@superfluid-finance/sdk-core";
 import { Subject } from "rxjs";
 import { getUnixTime } from "date-fns";
+import { BigNumber, Contract } from "ethers";
+import EvoBuildingABI from "./EvoBuildingABI";
 
 export interface RealTimeBalance {
   flowRate: string;
@@ -79,5 +81,19 @@ export class StreamStore {
     console.log("BalanceOf loaded", { superToken, superTokenBalance });
 
     return superTokenBalance;
+  }
+
+  async initNftTracking(address: string) {
+    console.log("Tracking NFT");
+    const contract = new Contract(address, EvoBuildingABI, this.provider);
+
+    const result = await contract.callStatic.balanceOf(this.wallet);
+    console.log("NFT RESULT", { result });
+    if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
+      const tokenURI = await contract.callStatic.tokenURI(1);
+      console.log("NFT URI", { tokenURI });
+    } else {
+      console.log("NO NFT");
+    }
   }
 }

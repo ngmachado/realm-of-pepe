@@ -176,29 +176,4 @@ export function createMapSystem(layer: PhaserLayer) {
     .setSize(WORLD_WIDTH, WORLD_HEIGHT)
     .setScale(3)
     .setOrigin(0, 0);
-
-  const nftBuilding = getComponentValueStrict(
-    SFSuperTokenTable,
-    "0x03" as Entity
-  );
-
-  if (playerEntityId) {
-    readEvoContract();
-  }
-
-  async function readEvoContract() {
-    const contract = new Contract(
-      nftBuilding.superTokenAddress,
-      EvoBuildingABI,
-      provider
-    );
-
-    const result = await contract.callStatic.balanceOf(playerEntityId);
-    if (result && BigNumber.from(result).eq(BigNumber.from("0x01"))) {
-      const tokenURI = await contract.callStatic.tokenURI(1);
-      console.log("NFT URI", { tokenURI });
-    } else {
-      console.log("NO NFT");
-    }
-  }
 }
