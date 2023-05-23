@@ -155,7 +155,8 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
   });
 
   defineSystem(world, [Has(Position)], ({ entity }) => {
-    if (playerEntity === entity && !firstRun) {
+    const isPlayer = playerEntity === entity;
+    if (isPlayer && !firstRun) {
       return;
     }
     firstRun = false;
@@ -166,6 +167,9 @@ export const createPlayerSystem = (layer: PhaserLayer) => {
       TILE_HEIGHT
     );
 
+    if(isPlayer) {
+        camera.phaserCamera.pan(pixelPosition.x, pixelPosition.y, 0);
+    }
     const playerSprite = objectPool.get(entity, "Sprite");
     playerSprite.setComponent({
       id: "position",
