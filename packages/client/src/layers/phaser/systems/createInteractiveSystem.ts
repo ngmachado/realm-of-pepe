@@ -290,7 +290,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       // TODO: This is a hacky way, how to get callback?
       console.log("Fetching SPHR");
       setTimeout(() => {
-        superfluid.streamStore.loadRealTimeBalance("SPHR");
+        streamStore.loadRealTimeBalance("SPHR");
       }, 2000);
     }
 
