@@ -95,6 +95,10 @@ export class StreamStore {
   // }
 
   async initNftTracking(address: string) {
+    setInterval(() => this.initNftTracking(address), 2000);
+  }
+
+  async trackNFT(address: string) {
     try {
       const contract = new Contract(address, EvoBuildingABI, this.provider);
 
@@ -104,12 +108,14 @@ export class StreamStore {
         const tokenURI = await contract.callStatic.tokenURI(1);
         console.log("NFT FOUND", tokenURI);
         this.nftEvo.next(Number(tokenURI));
-        this.nftEvoStream = {
-          flowRate: "500000000",
-          balance: "0",
-          timestamp: getUnixTime(new Date()),
-        };
-        setTimeout(() => this.initNftTracking(address), 2000);
+
+        if (!this.nftEvoStream) {
+          this.nftEvoStream = {
+            flowRate: "500000000",
+            balance: "0",
+            timestamp: getUnixTime(new Date()),
+          };
+        }
       }
     } catch (e: any) {
       console.log("No NFT found", e);

@@ -79,7 +79,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   streamStore.nftEvo.subscribe((evo) => {
     console.log({ evo });
     if (evo !== null) {
-      nftImage.setFrame(evo);
+      nftImage.setVisible(true).setFrame(evo);
     }
   });
 
@@ -230,7 +230,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion1.setVisible(true);
       potion2.setVisible(true);
       potion3.setVisible(true);
-      nftImage.setVisible(true);
+      nftImage.setVisible(streamStore.nftEvo !== null);
       soldierToken.setVisible(true);
     } else {
       backdrop.setVisible(false);
