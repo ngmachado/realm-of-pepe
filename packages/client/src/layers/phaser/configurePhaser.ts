@@ -24,6 +24,8 @@ import IntroSprite from "../../../public/assets/dialogs/intro.png";
 import InventoryBtnSprite from "../../../public/assets/buttons/inventory.png";
 import SoldierSprite from "../../../public/assets/characters/soldier.png";
 
+import StreamSprite from "../../../public/assets/animations/stream.png";
+
 import { TileAnimations } from "../../artTypes/world";
 import {
   Animations,
@@ -152,6 +154,15 @@ export const phaserConfig = {
             scale: 3,
           },
         },
+        [Assets.Stream]: {
+          type: AssetType.SpriteSheet,
+          key: Assets.Stream,
+          path: StreamSprite,
+          options: {
+            frameHeight: 64,
+            frameWidth: 64,
+          },
+        },
       },
       maps: {
         [Maps.Main]: mainMap,
@@ -171,6 +182,10 @@ export const phaserConfig = {
         },
         [Sprites.Soldier]: {
           assetKey: Assets.Soldier,
+          startFrame: 0,
+        },
+        [Sprites.Stream]: {
+          assetKey: Assets.Stream,
           startFrame: 0,
         },
       },
@@ -214,6 +229,14 @@ export const phaserConfig = {
           endFrame: 18,
           frameRate: 8,
           repeat: 0,
+        },
+        {
+          key: Animations.StreamFlow,
+          assetKey: Assets.Stream,
+          startFrame: 0,
+          endFrame: 29,
+          frameRate: 8,
+          repeat: -1,
         },
       ],
       tilesets: {

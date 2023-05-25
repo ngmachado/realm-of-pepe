@@ -12,6 +12,7 @@ export enum Animations {
   PepeRight = "PepeRight",
   PepeDown = "PepeDown",
   PepeLeft = "PepeLeft",
+  StreamFlow = "StreamFlow",
 }
 
 export enum Sprites {
@@ -19,6 +20,7 @@ export enum Sprites {
   Pepe,
   Background,
   Soldier,
+  Stream,
 }
 
 export enum Assets {
@@ -42,6 +44,8 @@ export enum Assets {
   InventoryBtn = "InventoryBtn",
 
   Soldier = "Soldier",
+
+  Stream = "Stream",
 }
 
 export const TILE_HEIGHT = 48;

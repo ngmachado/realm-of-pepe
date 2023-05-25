@@ -1,26 +1,18 @@
-import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
-import {
-  Entity,
-  Has,
-  defineEnterSystem,
-  getComponentValueStrict,
-} from "@latticexyz/recs";
-import { waitForTransaction, WaitForTransactionResult } from "@wagmi/core";
+import { Entity, getComponentValueStrict } from "@latticexyz/recs";
+import { waitForTransaction } from "@wagmi/core";
 import { getUnixTime } from "date-fns";
-import { BigNumber, Contract } from "ethers";
+import Decimal from "decimal.js";
 import { formatEther } from "ethers/lib/utils";
 import { Address } from "viem";
-import { Assets, TILE_HEIGHT, TILE_WIDTH } from "../constants";
+import { Animations, Assets } from "../constants";
 import { PhaserLayer } from "../createPhaserLayer";
 import {
   InteractiveEvent,
   getInteractiveTile,
 } from "../utils/InteractriveObjectUtils";
-import { RealTimeBalance, TokenRealtimeBalance } from "../utils/StreamStore";
-import Decimal from "decimal.js";
-import EvoBuildingABI from "../utils/EvoBuildingABI";
-import { calculateRealtimeBalance } from "../utils/StreamUtils";
 import { buildDialog, buildTooltip } from "../utils/PhaserUtils";
+import { TokenRealtimeBalance } from "../utils/StreamStore";
+import { calculateRealtimeBalance } from "../utils/StreamUtils";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
@@ -41,10 +33,11 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
-  const sapphireBalance = streamStore.realtimeBalances.get("SPHR");
+  let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
+  let blueRTB = streamStore.realtimeBalances.get("Blue");
 
   let showInventory = false;
-  let isMining = sapphireBalance && sapphireBalance.flowRate !== "0";
+  let isMining = sapphireRTB && sapphireRTB.flowRate !== "0";
 
   streamStore.realtimeBalanceObservable.subscribe(
     (rtb: TokenRealtimeBalance) => {
@@ -71,9 +64,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   if (playerEntityId) {
     streamStore.initNftTracking(nftBuilding.superTokenAddress);
   }
-
-  let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
-  let blueRTB = streamStore.realtimeBalances.get("Blue");
 
   streamStore.realtimeBalanceObservable.subscribe((realTimeBalance) => {
     const { token, ...rtb } = realTimeBalance;
@@ -106,6 +96,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     if (evo !== null) {
       evoInit = true;
       nftImage.setFrame(evo).setVisible(showInventory);
+      soldierLevel.setText(`Level ${evo}`).setVisible(showInventory);
     } else {
       nftImage.setVisible(false);
     }
@@ -127,6 +118,22 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       {
         color: "#734C44",
         fontSize: "40px",
+        fontFamily: "VT323",
+      }
+    )
+    .setOrigin(0.5, 0.5)
+    .setDepth(21)
+    .setVisible(false)
+    .setScrollFactor(0);
+
+  const soldierLevel = phaserScene.add
+    .text(
+      phaserScene.cameras.main.width / 2 - 280,
+      phaserScene.cameras.main.height / 2 + 220,
+      "",
+      {
+        color: "#734C44",
+        fontSize: "36px",
         fontFamily: "VT323",
       }
     )
@@ -195,6 +202,20 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setScrollFactor(0)
     .setDepth(19)
     .setOrigin(0, 0);
+
+  // TODO: Will make this animate soon
+  // const streamSprite = phaserScene.add
+  //   .sprite(
+  //     phaserScene.cameras.main.width / 2,
+  //     phaserScene.cameras.main.height / 2,
+  //     Assets.Stream,
+  //     0
+  //   )
+  //   .setScrollFactor(0)
+  //   .setDepth(19)
+  //   .setOrigin(0, 0)
+  //   .addToUpdateList()
+  //   .play(Animations.StreamFlow);
 
   const introDialog = buildDialog(phaserScene, Assets.Intro, () => {
     introDialog.setVisible(false);
@@ -287,6 +308,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion3.setVisible(true);
       nftImage.setVisible(evoInit);
       soldierToken.setVisible(true);
+      soldierLevel.setVisible(true);
     } else {
       backdrop.setVisible(false);
       inventoryDialog.setVisible(false);
@@ -298,6 +320,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion3.setVisible(false);
       nftImage.setVisible(false);
       soldierToken.setVisible(false);
+      soldierLevel.setVisible(false);
     }
   }
 
