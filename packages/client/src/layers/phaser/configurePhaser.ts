@@ -19,14 +19,12 @@ import NFTSprite from "../../../public/assets/dialogs/nft.png";
 import StoreSprite from "../../../public/assets/dialogs/store.png";
 import StoreEnterSprite from "../../../public/assets/dialogs/storedialog.png";
 import ForgeEnterSprite from "../../../public/assets/dialogs/forgedialog.png";
-
 import BookSprite from "../../../public/assets/dialogs/book.png";
 import IntroSprite from "../../../public/assets/dialogs/intro.png";
-
 import InventoryBtnSprite from "../../../public/assets/buttons/inventory.png";
 import SoldierSprite from "../../../public/assets/characters/soldier.png";
-
 import StreamSprite from "../../../public/assets/animations/stream.png";
+import PortalSprite from "../../../public/assets/animations/portal.png";
 
 import { TileAnimations } from "../../artTypes/world";
 import {
@@ -187,6 +185,15 @@ export const phaserConfig = {
             frameWidth: 64,
           },
         },
+        [Assets.Portal]: {
+          type: AssetType.SpriteSheet,
+          key: Assets.Portal,
+          path: PortalSprite,
+          options: {
+            frameWidth: 46,
+            frameHeight: 48,
+          },
+        },
       },
       maps: {
         [Maps.Main]: mainMap,
@@ -223,6 +230,10 @@ export const phaserConfig = {
         },
         [Sprites.NFT]: {
           assetKey: Assets.NFT,
+          startFrame: 0,
+        },
+        [Sprites.Portal]: {
+          assetKey: Assets.Portal,
           startFrame: 0,
         },
       },
@@ -293,12 +304,19 @@ export const phaserConfig = {
           frameRate: 3,
           repeat: -1,
         },
-
         {
           key: Animations.NFTLoading,
           assetKey: Assets.NFT,
           startFrame: 1,
           endFrame: 5,
+          frameRate: 3,
+          repeat: -1,
+        },
+        {
+          key: Animations.Portal,
+          assetKey: Assets.Portal,
+          startFrame: 0,
+          endFrame: 4,
           frameRate: 3,
           repeat: -1,
         },

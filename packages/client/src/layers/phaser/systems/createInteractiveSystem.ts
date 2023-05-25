@@ -135,7 +135,20 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     )
     .setScale(2)
     .setOrigin(0, 0)
+    .setDepth(22)
+    .setVisible(false)
+    .setScrollFactor(0);
+
+  const nftImagePortal = phaserScene.add
+    .sprite(
+      phaserScene.cameras.main.width / 2 - 280,
+      phaserScene.cameras.main.height / 2 + 90,
+      Assets.Portal,
+      0
+    )
+    .setScale(1.6)
     .setDepth(21)
+    .setOrigin(0.5, 0.5)
     .setVisible(false)
     .setScrollFactor(0);
 
@@ -145,6 +158,11 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     if (evo !== null) {
       evoInit = true;
       nftImage.setFrame(evo).setVisible(showInventory);
+      nftImagePortal
+        .setFrame(0)
+        .setVisible(showInventory)
+        .addToUpdateList()
+        .play(Animations.Portal);
       soldierLevel.setText(`Level ${evo + 1}`).setVisible(showInventory);
 
       if (nftTooltip.visible) {
@@ -153,6 +171,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       }
     } else {
       nftImage.setVisible(false);
+      nftImagePortal.setVisible(false).removeFromUpdateList();
     }
   });
 
@@ -431,6 +450,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion2.setVisible(true);
       potion3.setVisible(true);
       nftImage.setVisible(evoInit);
+      nftImagePortal.setVisible(evoInit);
       soldierToken.setVisible(true);
       soldierLevel.setVisible(true);
     } else {
@@ -443,6 +463,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       potion2.setVisible(false);
       potion3.setVisible(false);
       nftImage.setVisible(false);
+      nftImagePortal.setVisible(false);
       soldierToken.setVisible(false);
       soldierLevel.setVisible(false);
     }
@@ -492,7 +513,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       console.log("id", Number(id));
       streamStore.nftEvo.next(Number(id));
 
-      // streamStore.initNftTracking(nftBuilding.superTokenAddress);
       streamStore.nftEvoStream = {
         flowRate: "500000000",
         balance: "0",
@@ -513,18 +533,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       .setOrigin(0, 0)
       .setDepth(1);
   }
-
-  // function startNFTEvo(currentEvo: number) {
-  //   const newEvo = currentEvo + 1;
-
-  //   streamStore.nftEvo.next(newEvo);
-
-  //   if (newEvo <= 4) {
-  //     setTimeout(() => {
-  //       startNFTEvo(newEvo + 1);
-  //     }, 10000);
-  //   }
-  // }
 
   async function startExchange() {
     const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);

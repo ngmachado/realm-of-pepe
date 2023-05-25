@@ -16,6 +16,7 @@ export enum Animations {
   MineLoading = "MineLoading",
   StoreLoading = "StoreLoading",
   NFTLoading = "NFTLoading",
+  Portal = "Portal",
 }
 
 export enum Sprites {
@@ -27,6 +28,7 @@ export enum Sprites {
   Mine,
   Store,
   NFT,
+  Portal,
 }
 
 export enum Assets {
@@ -34,7 +36,6 @@ export enum Assets {
   Crystals = "Crystals",
   Pepe = "Pepe",
   Background = "Background",
-
   Cave = "Cave",
   Mine = "Mine",
   MineActive = "MineActive",
@@ -42,18 +43,14 @@ export enum Assets {
   NftActive = "NftActive",
   Store = "Store",
   StoreActive = "StoreActive",
-
   StoreEnter = "StoreEnter",
   ForgeEnter = "ForgeEnter",
-
   Book = "Book",
   Intro = "Intro",
-
   InventoryBtn = "InventoryBtn",
-
   Soldier = "Soldier",
-
   Stream = "Stream",
+  Portal = "Portal",
 }
 
 export const TILE_HEIGHT = 48;
