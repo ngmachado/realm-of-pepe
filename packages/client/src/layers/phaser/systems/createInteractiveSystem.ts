@@ -19,6 +19,8 @@ import {
 import { RealTimeBalance } from "../utils/StreamStore";
 import Decimal from "decimal.js";
 import EvoBuildingABI from "../utils/EvoBuildingABI";
+import { calculateRealtimeBalance } from "../utils/StreamUtils";
+import { buildDialog, buildTooltip } from "../utils/PhaserUtils";
 
 export const createInteractiveSystem = (layer: PhaserLayer) => {
   const {
@@ -113,6 +115,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setVisible(false)
     .setScrollFactor(0);
 
+  // Token streaming animations
   setInterval(() => {
     if (sapphireRTB) {
       const newBalance = calculateRealtimeBalance(sapphireRTB);
@@ -131,15 +134,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       soldierToken.setText(formatEther(newBalance.toString()));
     }
   }, 500);
-
-  function calculateRealtimeBalance(rtb: RealTimeBalance): BigNumber {
-    const { balance, flowRate, timestamp } = rtb;
-    const unixNow = getUnixTime(new Date());
-
-    return BigNumber.from(balance).add(
-      BigNumber.from(unixNow - timestamp).mul(BigNumber.from(flowRate))
-    );
-  }
 
   function addAssetText(label: string, x: number, y: number) {
     return phaserScene.add
@@ -182,43 +176,63 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setDepth(19)
     .setOrigin(0, 0);
 
-  const introDialog = addDialog(Assets.Intro, () => {
+  const introDialog = buildDialog(phaserScene, Assets.Intro, () => {
     introDialog.setVisible(false);
     backdrop.setVisible(false);
-  })
-    .setVisible(true)
-    .setScrollFactor(0);
+  }).setVisible(true);
 
-  const bookDialog = addDialog(Assets.Book, () => {
+  const inventoryDialog = buildDialog(phaserScene, Assets.Book, () => {
     toggleInventory();
-  }).setScrollFactor(0);
+  });
 
-  const storeDialog = addTooltip(Assets.Store, 24, 8, startExchange);
-  const mineDialog = addTooltip(Assets.Mine, 26, 30, startMining);
-  const nftDialog = addTooltip(Assets.NFT, 44, 13, mintNFT);
-  const caveDialog = addTooltip(Assets.Cave, 3, 13, enterCave);
+  const storeDialog = buildDialog(phaserScene, Assets.StoreEnter, () => {
+    storeDialog.setVisible(false);
+    backdrop.setVisible(false);
+    startExchange();
+  });
+
+  const forgeDialog = buildDialog(phaserScene, Assets.ForgeEnter, () => {
+    forgeDialog.setVisible(false);
+    backdrop.setVisible(false);
+    mintNFT();
+  });
+
+  const storeTooltip = buildTooltip(phaserScene, Assets.Store, 24, 8, () => {
+    backdrop.setVisible(true);
+    storeDialog.setVisible(true);
+  });
+
+  const mineTooltip = buildTooltip(phaserScene, Assets.Mine, 26, 30, () => {
+    startMining();
+  });
+
+  const nftTooltip = buildTooltip(phaserScene, Assets.NFT, 44, 13, () => {
+    backdrop.setVisible(true);
+    forgeDialog.setVisible(true);
+  });
+  const caveTooltip = buildTooltip(phaserScene, Assets.Cave, 3, 13, enterCave);
 
   playerLocation.subscribe((newLocation) => {
     const action = getInteractiveTile(newLocation.x, newLocation.y);
 
     switch (action?.event) {
       case InteractiveEvent.StartMining:
-        mineDialog.setVisible(true);
+        mineTooltip.setVisible(true);
         break;
       case InteractiveEvent.StartExchange:
-        storeDialog.setVisible(true);
+        storeTooltip.setVisible(true);
         break;
       case InteractiveEvent.MintNFT:
-        nftDialog.setVisible(true);
+        nftTooltip.setVisible(true);
         break;
       case InteractiveEvent.EnterCave:
-        caveDialog.setVisible(true);
+        caveTooltip.setVisible(true);
         break;
       default:
-        mineDialog.setVisible(false);
-        storeDialog.setVisible(false);
-        nftDialog.setVisible(false);
-        caveDialog.setVisible(false);
+        mineTooltip.setVisible(false);
+        storeTooltip.setVisible(false);
+        nftTooltip.setVisible(false);
+        caveTooltip.setVisible(false);
     }
   });
 
@@ -226,7 +240,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     showInventory = !showInventory;
     if (showInventory) {
       backdrop.setVisible(true);
-      bookDialog.setVisible(true);
+      inventoryDialog.setVisible(true);
       token1.setVisible(true);
       token2.setVisible(true);
       token3.setVisible(true);
@@ -237,7 +251,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       soldierToken.setVisible(true);
     } else {
       backdrop.setVisible(false);
-      bookDialog.setVisible(false);
+      inventoryDialog.setVisible(false);
       token1.setVisible(false);
       token2.setVisible(false);
       token3.setVisible(false);
@@ -247,39 +261,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       nftImage.setVisible(false);
       soldierToken.setVisible(false);
     }
-  }
-
-  function addTooltip(
-    image: string,
-    x: number,
-    y: number,
-    onClick: () => void
-  ) {
-    const pixelCoordinates = tileCoordToPixelCoord(
-      { x, y },
-      TILE_WIDTH,
-      TILE_HEIGHT
-    );
-    return phaserScene.add
-      .image(pixelCoordinates.x, pixelCoordinates.y, image)
-      .setOrigin(0, 0)
-      .setDepth(15)
-      .setInteractive()
-      .setVisible(false)
-      .on("pointerdown", onClick);
-  }
-
-  function addDialog(image: string, onClick: () => void) {
-    return phaserScene.add
-      .image(
-        phaserScene.cameras.main.width / 2,
-        phaserScene.cameras.main.height / 2,
-        image
-      )
-      .setDepth(20)
-      .setInteractive()
-      .setVisible(false)
-      .on("pointerdown", onClick);
   }
 
   async function mintNFT() {
