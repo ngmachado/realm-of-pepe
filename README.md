@@ -37,7 +37,7 @@ See the full ETHGlobal Showcase [here](https://ethglobal.com/showcase/realm-of-p
 
 ## Music
 
-- [Realm of Pepe](packages/2Frealmofpepe2.mp3)
+- [Realm of Pepe](packages/realmofpepe2.mp3)
 
 
 ## Stack
