@@ -35,6 +35,11 @@ See the full ETHGlobal Showcase [here](https://ethglobal.com/showcase/realm-of-p
 - We composed the game’s original music score using 16-bit instruments
 
 
+## Music
+
+- [Realm of Pepe](packages/2Frealmofpepe2.mp3)
+
+
 ## Stack
 - [ethers.js](https://github.com/ethers-io/ethers.js)
 - [viem](https://github.com/wagmi-dev/viem)
