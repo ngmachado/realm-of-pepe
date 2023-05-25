@@ -12,7 +12,8 @@ The project was built for the [Autonomous Worlds Hackathon](https://ethglobal.co
 
 ## Demo
 See the full ETHGlobal Showcase [here](https://ethglobal.com/showcase/realm-of-pepe-ju6pt).
-[![Realm of Pepe](https://im4.ezgif.com/tmp/ezgif-4-d9f515d0e1.gif)](https://ethglobal.com/showcase/realm-of-pepe-ju6pt)
+
+[![Realm of Pepe](ezgif.com-resize.gif)](https://ethglobal.com/showcase/realm-of-pepe-ju6pt)
 
 
 ## Gameplay
