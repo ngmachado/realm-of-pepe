@@ -118,8 +118,8 @@ export const phaserConfig = {
           key: Assets.NFT,
           path: NFTSprite,
           options: {
-            frameWidth: 125,
-            frameHeight: 100,
+            frameWidth: 250,
+            frameHeight: 176,
           },
         },
         [Assets.Store]: {
@@ -127,8 +127,8 @@ export const phaserConfig = {
           key: Assets.Store,
           path: StoreSprite,
           options: {
-            frameWidth: 125,
-            frameHeight: 100,
+            frameWidth: 250,
+            frameHeight: 200,
           },
         },
         [Assets.StoreEnter]: {

@@ -39,7 +39,9 @@ export enum Assets {
   Mine = "Mine",
   MineActive = "MineActive",
   NFT = "NFT",
+  NftActive = "NftActive",
   Store = "Store",
+  StoreActive = "StoreActive",
 
   StoreEnter = "StoreEnter",
   ForgeEnter = "ForgeEnter",

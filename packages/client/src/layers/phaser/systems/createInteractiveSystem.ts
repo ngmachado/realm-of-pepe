@@ -38,6 +38,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   let showInventory = false;
   let isMining = sapphireRTB && sapphireRTB.flowRate !== "0";
+  let isExchanging = blueRTB && blueRTB.flowRate !== "0";
 
   streamStore.realtimeBalanceObservable.subscribe(
     (rtb: TokenRealtimeBalance) => {
@@ -51,6 +52,17 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
           }
         } else {
           isMining = false;
+        }
+      } else if (rtb.token === "Blue") {
+        if (rtb.flowRate !== "0") {
+          isExchanging = true;
+
+          if (storeTooltip.visible) {
+            storeTooltip.setVisible(false).removeFromUpdateList();
+            showStoreActiveTooltip();
+          }
+        } else {
+          isExchanging = false;
         }
       }
     }
@@ -66,6 +78,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     mineActiveTooltip.setVisible(false);
     mineActiveStream.setVisible(false);
     mineActiveAnimation.setVisible(false);
+  }
+
+  function showStoreActiveTooltip() {
+    storeActiveTooltip.setVisible(true);
+    storeActiveStream.setVisible(true);
+    storeActiveAnimation.setVisible(true);
+  }
+
+  function hideStoreActiveTooltip() {
+    storeActiveTooltip.setVisible(false);
+    storeActiveStream.setVisible(false);
+    storeActiveAnimation.setVisible(false);
   }
 
   const nftBuilding = getComponentValueStrict(
@@ -277,6 +301,34 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .addToUpdateList()
     .play(Animations.StreamFlow);
 
+  const storeActiveTooltip = buildTooltip(
+    phaserScene,
+    Assets.StoreActive,
+    24,
+    8,
+    () => {
+      console.log("Do nothing");
+    }
+  );
+
+  const storeActiveStream = phaserScene.add
+    .text(1277, 494, "123", {
+      color: "#734C44",
+      fontSize: "32px",
+      fontFamily: "VT323",
+    })
+    .setOrigin(0.5, 0.5)
+    .setDepth(21)
+    .setVisible(false);
+
+  const storeActiveAnimation = phaserScene.add
+    .sprite(1277, 444, Assets.Stream, 0)
+    .setDepth(19)
+    .setOrigin(0.5, 0.5)
+    .setVisible(false)
+    .addToUpdateList()
+    .play(Animations.StreamFlow);
+
   const nftTooltip = buildTooltip(phaserScene, Assets.NFT, 44, 13, () => {
     backdrop.setVisible(true);
     forgeDialog.setVisible(true);
@@ -293,6 +345,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         break;
       }
       case InteractiveEvent.StartExchange:
+        isExchanging ? showStoreActiveTooltip() : storeTooltip.setVisible(true);
         storeTooltip.setVisible(true);
         break;
       case InteractiveEvent.MintNFT:
@@ -303,6 +356,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         break;
       default: {
         hideMineActiveTooltip();
+        hideStoreActiveTooltip();
         mineTooltip.setVisible(false);
         storeTooltip.setVisible(false);
         nftTooltip.setVisible(false);
@@ -421,6 +475,10 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const storeData = getComponentValueStrict(SFStoreTable, "0x01" as Entity);
     const signerToUse = signer.get();
     if (!storeData || !signerToUse || !playerEntityId) return;
+
+    storeDialog.setVisible(false);
+    backdrop.setVisible(false);
+    storeTooltip.addToUpdateList().play(Animations.StoreLoading);
 
     const superToken = await framework.loadSuperToken("SPHR");
     try {
