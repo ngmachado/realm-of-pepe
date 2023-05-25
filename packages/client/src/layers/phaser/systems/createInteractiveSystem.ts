@@ -93,6 +93,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     storeActiveAnimation.setVisible(false);
   }
 
+  function showNftActiveTooltip() {
+    nftActiveTooltip.setVisible(true);
+    nftActiveStream.setVisible(true);
+    nftActiveAnimation.setVisible(true);
+  }
+
+  function hideNftActiveTooltip() {
+    nftActiveTooltip.setVisible(false);
+    nftActiveStream.setVisible(false);
+    nftActiveAnimation.setVisible(false);
+  }
+
   const nftBuilding = getComponentValueStrict(
     SFSuperTokenTable,
     "0x03" as Entity
@@ -133,7 +145,12 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     if (evo !== null) {
       evoInit = true;
       nftImage.setFrame(evo).setVisible(showInventory);
-      soldierLevel.setText(`Level ${evo}`).setVisible(showInventory);
+      soldierLevel.setText(`Level ${evo + 1}`).setVisible(showInventory);
+
+      if (nftTooltip.visible) {
+        nftTooltip.setVisible(false).removeFromUpdateList();
+        showNftActiveTooltip();
+      }
     } else {
       nftImage.setVisible(false);
     }
@@ -202,7 +219,9 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     if (streamStore.nftEvoStream) {
       const newBalance = calculateRealtimeBalance(streamStore.nftEvoStream);
-      soldierToken.setText(formatEther(newBalance.toString()));
+      const formattedBalance = formatEther(newBalance.toString());
+      soldierToken.setText(formattedBalance);
+      nftActiveStream.setText(formattedBalance);
     }
   }, 500);
 
@@ -338,6 +357,34 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     forgeDialog.setVisible(true);
   });
 
+  const nftActiveTooltip = buildTooltip(
+    phaserScene,
+    Assets.NftActive,
+    44,
+    13,
+    () => {
+      console.log("Do nothing");
+    }
+  );
+
+  const nftActiveStream = phaserScene.add
+    .text(2237, 784, "123", {
+      color: "#734C44",
+      fontSize: "32px",
+      fontFamily: "VT323",
+    })
+    .setOrigin(0.5, 0.5)
+    .setDepth(21)
+    .setVisible(false);
+
+  const nftActiveAnimation = phaserScene.add
+    .sprite(2237, 734, Assets.Stream, 0)
+    .setDepth(19)
+    .setOrigin(0.5, 0.5)
+    .setVisible(false)
+    .addToUpdateList()
+    .play(Animations.StreamFlow);
+
   const caveTooltip = buildTooltip(phaserScene, Assets.Cave, 3, 13, enterCave);
 
   playerLocation.subscribe((newLocation) => {
@@ -352,7 +399,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         isExchanging ? showStoreActiveTooltip() : storeTooltip.setVisible(true);
         break;
       case InteractiveEvent.MintNFT:
-        nftTooltip.setVisible(true);
+        evoInit ? showNftActiveTooltip() : nftTooltip.setVisible(true);
         break;
       case InteractiveEvent.EnterCave:
         caveTooltip.setVisible(true);
@@ -360,6 +407,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       default: {
         hideMineActiveTooltip();
         hideStoreActiveTooltip();
+        hideNftActiveTooltip();
         mineTooltip.setVisible(false);
         storeTooltip.setVisible(false);
         nftTooltip.setVisible(false);
@@ -411,6 +459,10 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     const myAddress = await signerToUse.getAddress();
     if (!myAddress) return;
+
+    forgeDialog.setVisible(false);
+    backdrop.setVisible(false);
+    nftTooltip.addToUpdateList().play(Animations.NFTLoading);
 
     const superToken = await framework.loadSuperToken("Blue");
 
