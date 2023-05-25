@@ -16,7 +16,7 @@ import {
   InteractiveEvent,
   getInteractiveTile,
 } from "../utils/InteractriveObjectUtils";
-import { RealTimeBalance } from "../utils/StreamStore";
+import { RealTimeBalance, TokenRealtimeBalance } from "../utils/StreamStore";
 import Decimal from "decimal.js";
 import EvoBuildingABI from "../utils/EvoBuildingABI";
 import { calculateRealtimeBalance } from "../utils/StreamUtils";
@@ -41,7 +41,27 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     },
   } = layer;
 
+  const sapphireBalance = streamStore.realtimeBalances.get("SPHR");
+
   let showInventory = false;
+  let isMining = sapphireBalance && sapphireBalance.flowRate !== "0";
+
+  streamStore.realtimeBalanceObservable.subscribe(
+    (rtb: TokenRealtimeBalance) => {
+      if (rtb.token === "SPHR") {
+        if (rtb.flowRate !== "0") {
+          isMining = true;
+
+          if (mineTooltip.visible) {
+            mineTooltip.setVisible(false);
+            mineActiveTooltip.setVisible(true);
+          }
+        } else {
+          isMining = false;
+        }
+      }
+    }
+  );
 
   const nftBuilding = getComponentValueStrict(
     SFSuperTokenTable,
@@ -206,6 +226,16 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     startMining();
   });
 
+  const mineActiveTooltip = buildTooltip(
+    phaserScene,
+    Assets.MineActive,
+    26,
+    30,
+    () => {
+      console.log("Do nothing");
+    }
+  );
+
   const nftTooltip = buildTooltip(phaserScene, Assets.NFT, 44, 13, () => {
     backdrop.setVisible(true);
     forgeDialog.setVisible(true);
@@ -216,9 +246,12 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     const action = getInteractiveTile(newLocation.x, newLocation.y);
 
     switch (action?.event) {
-      case InteractiveEvent.StartMining:
-        mineTooltip.setVisible(true);
+      case InteractiveEvent.StartMining: {
+        isMining
+          ? mineActiveTooltip.setVisible(true)
+          : mineTooltip.setVisible(true);
         break;
+      }
       case InteractiveEvent.StartExchange:
         storeTooltip.setVisible(true);
         break;
@@ -228,11 +261,16 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       case InteractiveEvent.EnterCave:
         caveTooltip.setVisible(true);
         break;
-      default:
+      default: {
+        mineActiveTooltip.setVisible(false);
         mineTooltip.setVisible(false);
         storeTooltip.setVisible(false);
         nftTooltip.setVisible(false);
         caveTooltip.setVisible(false);
+        storeDialog.setVisible(false);
+        forgeDialog.setVisible(false);
+        backdrop.setVisible(false);
+      }
     }
   });
 

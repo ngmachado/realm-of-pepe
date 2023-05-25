@@ -29,7 +29,7 @@ export enum Assets {
 
   Cave = "Cave",
   Mine = "Mine",
-  MineDisabled = "MineDisabled",
+  MineActive = "MineActive",
   NFT = "NFT",
   Store = "Store",
 

@@ -11,7 +11,7 @@ export interface RealTimeBalance {
   timestamp: number;
 }
 
-interface TokenRealtimeBalance extends RealTimeBalance {
+export interface TokenRealtimeBalance extends RealTimeBalance {
   token: string;
 }
 

@@ -12,7 +12,7 @@ import SummerTileset from "../../../public/assets/tilesets/summer.png";
 
 import CaveSprite from "../../../public/assets/dialogs/cave.png";
 import MineSprite from "../../../public/assets/dialogs/mine.png";
-import MineDisabledSprite from "../../../public/assets/dialogs/minedisabled.png";
+import MineActiveSprite from "../../../public/assets/dialogs/mineactive.png";
 import NFTSprite from "../../../public/assets/dialogs/nft.png";
 import StoreSprite from "../../../public/assets/dialogs/store.png";
 import StoreEnterSprite from "../../../public/assets/dialogs/storedialog.png";
@@ -102,10 +102,10 @@ export const phaserConfig = {
           key: Assets.Mine,
           path: MineSprite,
         },
-        [Assets.MineDisabled]: {
+        [Assets.MineActive]: {
           type: AssetType.Image,
-          key: Assets.MineDisabled,
-          path: MineDisabledSprite,
+          key: Assets.MineActive,
+          path: MineActiveSprite,
         },
         [Assets.NFT]: {
           type: AssetType.Image,
