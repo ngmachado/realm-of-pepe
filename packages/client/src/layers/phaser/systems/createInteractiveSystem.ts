@@ -35,6 +35,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   let sapphireRTB = streamStore.realtimeBalances.get("SPHR");
   let blueRTB = streamStore.realtimeBalances.get("Blue");
+  console.log({ blueRTB });
 
   let showInventory = false;
   let isMining = sapphireRTB && sapphireRTB.flowRate !== "0";
@@ -192,8 +193,11 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     if (blueRTB) {
       const newBalance = calculateRealtimeBalance(blueRTB);
-      const formattedBalance = new Decimal(formatEther(newBalance));
-      potion1.setText(formattedBalance.toDP(6).toString());
+      const formattedBalance = new Decimal(formatEther(newBalance))
+        .toDP(6)
+        .toString();
+      potion1.setText(formattedBalance);
+      storeActiveStream.setText(formattedBalance);
     }
 
     if (streamStore.nftEvoStream) {
@@ -312,7 +316,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   );
 
   const storeActiveStream = phaserScene.add
-    .text(1277, 494, "123", {
+    .text(1277, 544, "123", {
       color: "#734C44",
       fontSize: "32px",
       fontFamily: "VT323",
@@ -322,7 +326,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setVisible(false);
 
   const storeActiveAnimation = phaserScene.add
-    .sprite(1277, 444, Assets.Stream, 0)
+    .sprite(1277, 494, Assets.Stream, 0)
     .setDepth(19)
     .setOrigin(0.5, 0.5)
     .setVisible(false)
@@ -346,7 +350,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       }
       case InteractiveEvent.StartExchange:
         isExchanging ? showStoreActiveTooltip() : storeTooltip.setVisible(true);
-        storeTooltip.setVisible(true);
         break;
       case InteractiveEvent.MintNFT:
         nftTooltip.setVisible(true);
