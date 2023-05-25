@@ -3,7 +3,7 @@ import { TILE_HEIGHT, TILE_WIDTH } from "../constants";
 
 export function buildTooltip(
   scene: Phaser.Scene,
-  image: string,
+  sprite: string,
   x: number,
   y: number,
   onClick: () => void
@@ -13,8 +13,9 @@ export function buildTooltip(
     TILE_WIDTH,
     TILE_HEIGHT
   );
+
   return scene.add
-    .image(pixelCoordinates.x, pixelCoordinates.y, image)
+    .sprite(pixelCoordinates.x, pixelCoordinates.y, sprite)
     .setOrigin(0, 0)
     .setDepth(15)
     .setInteractive()

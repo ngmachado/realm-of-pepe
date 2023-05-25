@@ -13,6 +13,9 @@ export enum Animations {
   PepeDown = "PepeDown",
   PepeLeft = "PepeLeft",
   StreamFlow = "StreamFlow",
+  MineLoading = "MineLoading",
+  StoreLoading = "StoreLoading",
+  NFTLoading = "NFTLoading",
 }
 
 export enum Sprites {
@@ -21,6 +24,9 @@ export enum Sprites {
   Background,
   Soldier,
   Stream,
+  Mine,
+  Store,
+  NFT,
 }
 
 export enum Assets {

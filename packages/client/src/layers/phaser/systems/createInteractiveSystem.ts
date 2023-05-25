@@ -46,8 +46,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
           isMining = true;
 
           if (mineTooltip.visible) {
-            mineTooltip.setVisible(false);
-            mineActiveTooltip.setVisible(true);
+            mineTooltip.setVisible(false).removeFromUpdateList();
+            showMineActiveTooltip();
           }
         } else {
           isMining = false;
@@ -55,6 +55,18 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       }
     }
   );
+
+  function showMineActiveTooltip() {
+    mineActiveTooltip.setVisible(true);
+    mineActiveStream.setVisible(true);
+    mineActiveAnimation.setVisible(true);
+  }
+
+  function hideMineActiveTooltip() {
+    mineActiveTooltip.setVisible(false);
+    mineActiveStream.setVisible(false);
+    mineActiveAnimation.setVisible(false);
+  }
 
   const nftBuilding = getComponentValueStrict(
     SFSuperTokenTable,
@@ -146,8 +158,12 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
   setInterval(() => {
     if (sapphireRTB) {
       const newBalance = calculateRealtimeBalance(sapphireRTB);
-      const formattedBalance = new Decimal(formatEther(newBalance));
-      token1.setText(formattedBalance.toDP(6).toString());
+      const formattedBalance = new Decimal(formatEther(newBalance))
+        .toDP(6)
+        .toString();
+
+      token1.setText(formattedBalance);
+      mineActiveStream.setText(formattedBalance);
     }
 
     if (blueRTB) {
@@ -203,20 +219,6 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     .setDepth(19)
     .setOrigin(0, 0);
 
-  // TODO: Will make this animate soon
-  // const streamSprite = phaserScene.add
-  //   .sprite(
-  //     phaserScene.cameras.main.width / 2,
-  //     phaserScene.cameras.main.height / 2,
-  //     Assets.Stream,
-  //     0
-  //   )
-  //   .setScrollFactor(0)
-  //   .setDepth(19)
-  //   .setOrigin(0, 0)
-  //   .addToUpdateList()
-  //   .play(Animations.StreamFlow);
-
   const introDialog = buildDialog(phaserScene, Assets.Intro, () => {
     introDialog.setVisible(false);
     backdrop.setVisible(false);
@@ -257,10 +259,29 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
     }
   );
 
+  const mineActiveStream = phaserScene.add
+    .text(1373, 1600, "123", {
+      color: "#734C44",
+      fontSize: "32px",
+      fontFamily: "VT323",
+    })
+    .setOrigin(0.5, 0.5)
+    .setDepth(21)
+    .setVisible(false);
+
+  const mineActiveAnimation = phaserScene.add
+    .sprite(1373, 1550, Assets.Stream, 0)
+    .setDepth(19)
+    .setOrigin(0.5, 0.5)
+    .setVisible(false)
+    .addToUpdateList()
+    .play(Animations.StreamFlow);
+
   const nftTooltip = buildTooltip(phaserScene, Assets.NFT, 44, 13, () => {
     backdrop.setVisible(true);
     forgeDialog.setVisible(true);
   });
+
   const caveTooltip = buildTooltip(phaserScene, Assets.Cave, 3, 13, enterCave);
 
   playerLocation.subscribe((newLocation) => {
@@ -268,9 +289,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
     switch (action?.event) {
       case InteractiveEvent.StartMining: {
-        isMining
-          ? mineActiveTooltip.setVisible(true)
-          : mineTooltip.setVisible(true);
+        isMining ? showMineActiveTooltip() : mineTooltip.setVisible(true);
         break;
       }
       case InteractiveEvent.StartExchange:
@@ -283,7 +302,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
         caveTooltip.setVisible(true);
         break;
       default: {
-        mineActiveTooltip.setVisible(false);
+        hideMineActiveTooltip();
         mineTooltip.setVisible(false);
         storeTooltip.setVisible(false);
         nftTooltip.setVisible(false);
@@ -433,6 +452,8 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
 
   async function startMining() {
     try {
+      mineTooltip.addToUpdateList().play(Animations.MineLoading);
+
       await setSapphireStream();
     } catch (e: any) {
       if (e.message.includes("0x801b6863")) {
@@ -443,7 +464,7 @@ export const createInteractiveSystem = (layer: PhaserLayer) => {
       console.log("Fetching SPHR");
       setTimeout(() => {
         streamStore.loadRealTimeBalance("SPHR");
-      }, 2000);
+      }, 1000);
     }
   }
 

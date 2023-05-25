@@ -100,9 +100,13 @@ export const phaserConfig = {
           path: CaveSprite,
         },
         [Assets.Mine]: {
-          type: AssetType.Image,
+          type: AssetType.SpriteSheet,
           key: Assets.Mine,
           path: MineSprite,
+          options: {
+            frameWidth: 250,
+            frameHeight: 176,
+          },
         },
         [Assets.MineActive]: {
           type: AssetType.Image,
@@ -110,14 +114,22 @@ export const phaserConfig = {
           path: MineActiveSprite,
         },
         [Assets.NFT]: {
-          type: AssetType.Image,
+          type: AssetType.SpriteSheet,
           key: Assets.NFT,
           path: NFTSprite,
+          options: {
+            frameWidth: 125,
+            frameHeight: 100,
+          },
         },
         [Assets.Store]: {
-          type: AssetType.Image,
+          type: AssetType.SpriteSheet,
           key: Assets.Store,
           path: StoreSprite,
+          options: {
+            frameWidth: 125,
+            frameHeight: 100,
+          },
         },
         [Assets.StoreEnter]: {
           type: AssetType.Image,
@@ -188,6 +200,19 @@ export const phaserConfig = {
           assetKey: Assets.Stream,
           startFrame: 0,
         },
+
+        [Sprites.Mine]: {
+          assetKey: Assets.Mine,
+          startFrame: 0,
+        },
+        [Sprites.Store]: {
+          assetKey: Assets.Store,
+          startFrame: 0,
+        },
+        [Sprites.NFT]: {
+          assetKey: Assets.NFT,
+          startFrame: 0,
+        },
       },
       animations: [
         {
@@ -236,6 +261,33 @@ export const phaserConfig = {
           startFrame: 0,
           endFrame: 29,
           frameRate: 8,
+          repeat: -1,
+        },
+
+        {
+          key: Animations.MineLoading,
+          assetKey: Assets.Mine,
+          startFrame: 1,
+          endFrame: 5,
+          frameRate: 3,
+          repeat: -1,
+        },
+
+        {
+          key: Animations.StoreLoading,
+          assetKey: Assets.Store,
+          startFrame: 1,
+          endFrame: 5,
+          frameRate: 3,
+          repeat: -1,
+        },
+
+        {
+          key: Animations.NFTLoading,
+          assetKey: Assets.NFT,
+          startFrame: 1,
+          endFrame: 5,
+          frameRate: 3,
           repeat: -1,
         },
       ],
